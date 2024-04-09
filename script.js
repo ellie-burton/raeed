@@ -45,23 +45,16 @@ const instructions = [
   },
   {
     step: 3,
-    text: "Choose a recipient for all your donations from the following list of charities: <div class='form-check'><input class='form-check-input' type='radio' name='flexRadioDefault' id='flexRadioDefault1'><label class='form-check-label' for='flexRadioDefault1'> Tuscaloosa Public Library</label></div><div class='form-check'><input class='form-check-input' type='radio' name='flexRadioDefault' id='flexRadioDefault1'><label class='form-check-label' for='flexRadioDefault1'> Tuscaloosa  YMCA</label></div><div class='form-check'><input class='form-check-input' type='radio' name='flexRadioDefault' id='flexRadioDefault1'><label class='form-check-label' for='flexRadioDefault1'> RISE Center (Early childhood preschool services)</label></div><div class='form-check'><input class='form-check-input' type='radio' name='flexRadioDefault' id='flexRadioDefault1'><label class='form-check-label' for='flexRadioDefault1'> Tuscaloosa Metro Animal Shelter</label></div>",
+    text: "Choose a recipient for all your donations from the following list of charities: <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio1'><label class='form-check-label' for='charityRadio1'> Tuscaloosa Public Library</label></div><div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio2'><label class='form-check-label' for='charityRadio2'> Tuscaloosa YMCA</label></div><div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio3'><label class='form-check-label' for='charityRadio3'> RISE Center (Early childhood preschool services)</label></div><div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio4'><label class='form-check-label' for='charityRadio4'> Tuscaloosa Metro Animal Shelter</label></div>",
+  },
+  {
+    step: 4,
+    text: "Finally, choose if you would like red balls to represent $20 or $60: <div class='form-check'><input class='form-check-input' type='radio' name='flexRadioDefault' id='flexRadioDefault1'><label class='form-check-label' for='flexRadioDefault1'> $20</label></div><div class='form-check'><input class='form-check-input' type='radio' name='flexRadioDefault' id='flexRadioDefault1'><label class='form-check-label' for='flexRadioDefault1'>$60</label></div>",
   }
 ];
 
-const charities = [
-  "Tuscaloosa Public Library",
-  "Tuscaloosa YMCA",
-  "RISE Center (Early childhood preschool services)",
-  "Tuscaloosa Metro Animal Shelter",
-];
-
 let currentStep = 0;
-let mainChart = null;
-let scenarioNum = 0;
 
-
-// Additions and modifications to your existing script.js for modal handling
 document.addEventListener("DOMContentLoaded", function () {
   const instructionModal = document.getElementById("instructionModal");
   const viewInstructionsBtn = document.getElementById("viewInstructionsBtn");
@@ -113,6 +106,20 @@ document.addEventListener("DOMContentLoaded", function () {
     viewInstructionsBtn.style.display = "none";
   });
 
+  function handleCharitySelection() {
+    // Query all radio buttons for charity
+    const charityRadios = document.querySelectorAll('input[name="charityRadioGroup"]'); // Ensure the name matches your group
+    charityRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                // Assuming the value of each radio button is set to the charity's name
+                charity = this.value;
+                console.log("Selected charity:", charity);
+            }
+        });
+    });
+}
+
   function showScenarioA(scenario, index) {
     const scenarioDiv = document.getElementById("scenario");
     scenarioDiv.innerHTML = ``;
@@ -131,6 +138,7 @@ inputDiv.innerHTML = `<p>How much do you want to give to your chosen charity? </
     const scenarioDiv = document.getElementById("scenario");
     scenarioDiv.innerHTML = ``;
     scenarioDiv.innerHTML = `<h2>Scenario ${index+1}</h2><p>The money you receive will be determined by a draw from an urn. In the urn, there are red balls and blue balls. Randomly drawing a red ball yields $20, and randomly drawing a blue ball yields $60. There are 10 balls in the urn, where the number of red balls is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. You will <b>first make the decision</b> on how much your donation will be for each color of the ball randomly drawn from the urn. <b> Subsequently, </b> the computer will draw a random ball from the urn.</p>`;
+    //inputdiv content is default on load
   }
 
   function generatePaginationButtons() {
@@ -158,6 +166,7 @@ inputDiv.innerHTML = `<p>How much do you want to give to your chosen charity? </
 
   // Shuffle scenarios
   scenarios.sort(() => Math.random() - 0.5);
+  handleCharitySelection();
 
   //randomly determine if the user is in group a or b
   var group = Math.random() < 0.5 ? "a" : "b";
@@ -171,4 +180,6 @@ inputDiv.innerHTML = `<p>How much do you want to give to your chosen charity? </
   const instructionDiv = document.getElementById("instructions");
   instructionDiv.innerHTML = `<p>${instructions[0].text}</p>`;
   generatePaginationButtons();
+
+  //take input of modal and store in variables
 });

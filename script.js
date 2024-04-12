@@ -71,6 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const viewInstructionsBtn = document.getElementById("viewInstructionsBtn");
     const instructionDiv = document.getElementById("instructions");
     const userInputs = new Array(scenarios.length).fill('');
+    scenarios.sort(() => Math.random() - 0.5);
+
     var group = Math.random() < 0.5 ? "a" : "b";
     var mainChart;
     var originalBackgroundColors = [];
@@ -127,7 +129,13 @@ function generateChartData(scenario) {
         colors: barColors
     };
 }
-
+function allFieldsFilled() {
+    if(group === "a"){
+    return userInputs.every(input => input);
+  } else {
+    return userInputs.every(input => input.red && input.blue);
+  } }
+  
 function lightenColor(color) {
     //lighten color by percent
     if (color == "gray") {
@@ -227,7 +235,7 @@ function lightenColor(color) {
     } else {
         showScenario(scenarios[0], 0, true);
     }
-
+    
     function showScenario(scenario, index, stateContingent) {
         const scenarioDiv = document.getElementById("scenario");
         if (!scenarioDiv) {

@@ -71,9 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const viewInstructionsBtn = document.getElementById("viewInstructionsBtn");
     const instructionDiv = document.getElementById("instructions");
     const userInputs = new Array(scenarios.length).fill('');
-    console.log("Before shuffle:", scenarios);
     scenarios.sort(() => Math.random() - 0.5);
-    console.log("After shuffle:", scenarios);
 
     var group = Math.random() < 0.5 ? "a" : "b";
     var mainChart;
@@ -101,7 +99,48 @@ document.addEventListener("DOMContentLoaded", function () {
     Chart.defaults.global.tooltips.enabled = false;
     Chart.defaults.global.legend.display = false;
     Chart.defaults.global.hover.enabled = false;
+    function moveToNextScenario() {
+        currentStep++;
+        if (currentStep < scenarios.length) {
+            showScenario(scenarios[currentStep], currentStep, group === "b");
+        } else {
+            //don't show next button
+            document.getElementById("nextScenarioBtn").style.display = "none";
+        }
+    }
+    
+    function validateCurrentInput() {
+        const currentIndex = currentStep; // Assuming currentStep is your current scenario index
+        let inputValid = true;
+        
+        
+        // Example validation for a scenario with range conditions
+        if (group == "b") {
+            const redInput = parseInt(document.getElementById(`redInput${currentIndex}`).value, 10);
+            const blueInput = parseInt(document.getElementById(`blueInput${currentIndex}`).value, 10);
+            if (isNaN(redInput) || redInput < 0 || redInput > 20 || isNaN(blueInput) || blueInput < 0 || blueInput > 60) {
+                inputValid = false;
+            }
+        } else {
+            const userInput = document.getElementById(`input${currentIndex}`).value;
 
+            const donationAmount = parseInt(userInput, 10);
+            if (isNaN(donationAmount) || donationAmount < 0 || donationAmount > 20) {
+                inputValid = false;
+            }
+        }
+        
+        return inputValid;
+    }
+    
+
+    document.getElementById("nextScenarioBtn").addEventListener("click", function() {
+        if (validateCurrentInput()) {
+            moveToNextScenario();
+        } else {
+            alert("Please enter a valid amount within the specified range.");
+        }
+    });
     
 function generateChartData(scenario) {
     var redCount = scenario.redMin;
@@ -264,14 +303,14 @@ function lightenColor(color) {
     </p><p>We will now ask you how much you would like to pledge to share with your chosen charity. We will allow you to make the pledge based on the color that the spinner will land on. For your possible donation amounts, you can select any number up to (and including) $20 for a spin that lands on red and any number up to (and including) $60 for a spin that lands on blue.
     </p>
 
-                <p>Please select how much you would give if you drew a...</p>
+                <p>Please select how much you would give in each possible outcome...</p>
                 <div class="input-group input-group-lg">
                     <span class="input-group-text">$</span>
-                    <input type="number" class="form-control" placeholder="Amount for red ball (up to $20)" value="${userInputs[index]?.red || ''}" id="redInput${index}">
+                    <input type="number" class="form-control" placeholder="Amount if wheel lands on red (up to $20)" value="${userInputs[index]?.red || ''}" id="redInput${index}">
                 </div>
                 <div class="input-group input-group-lg mt-2">
                     <span class="input-group-text">$</span>
-                    <input type="number" class="form-control" placeholder="Amount for blue ball (up to $60)" value="${userInputs[index]?.blue || ''}" id="blueInput${index}">
+                    <input type="number" class="form-control" placeholder="Amount if wheel lands on blue (up to $60)" value="${userInputs[index]?.blue || ''}" id="blueInput${index}">
                 </div>
             `;
         } else {
@@ -417,31 +456,26 @@ function lightenColor(color) {
     }
     
     function generateNonStateContingentDescription(scenario) {
-        return `The money you receive will be determined by a draw from an urn containing 10 balls. 
-                There are between ${scenario.redMin} and ${scenario.redMax} red balls; each red ball is worth $20. 
-                The rest are blue balls, each worth $60.`;
+        return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
     }
     
     function generateStateContingentDescription(scenario) {
-        return `In this scenario, you first decide how much to donate depending on the color of the ball drawn. 
-                There are between ${scenario.redMin} and ${scenario.redMax} red balls (each worth $20) and 
-                the remaining balls are blue (each worth $60).`;
+        return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`
     }
     
 
-    function generatePaginationButtons() {
-        const pagination = document.getElementById("pagination");
-        pagination.innerHTML = "<br/><br/><br/><br/>";
-        scenarios.forEach((scenario, index) => {
-            const button = document.createElement("button");
-            button.textContent = `Scenario ${index + 1}`;
-            button.className = "btn btn-primary mb-2";
-            button.onclick = () => showScenario(scenario, index, group === "b");
-            pagination.appendChild(button);
-        });
-    }
+    // function generatePaginationButtons() {
+    //     const pagination = document.getElementById("pagination");
+    //     pagination.innerHTML = "<br/><br/><br/><br/>";
+    //     scenarios.forEach((scenario, index) => {
+    //         const button = document.createElement("button");
+    //         button.textContent = `Scenario ${index + 1}`;
+    //         button.className = "btn btn-primary mb-2";
+    //         button.onclick = () => showScenario(scenario, index, group === "b");
+    //         pagination.appendChild(button);
+    //     });
+    // }
 
-    generatePaginationButtons();
     document.getElementById("instructions").innerHTML = `<p>${instructions[0].text}</p>`;
 
 });

@@ -33,19 +33,23 @@
         </div>
     </div>
     <!-- New Modal for Submission Confirmation -->
-<div class="modal" id="submitModal" style="display:none;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Submission Complete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Your responses have been recorded. Thank you for your participation!</p>
+    <div class="modal" id="submitModal" style="display:none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Scenario Outcome</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="scenarioDescription">Loading...</p>
+                    <div id="decisionInput">
+                        <!-- User input fields will be inserted here -->
+                    </div>
+                    <button type="button" class="btn btn-primary" id="confirmChange">Confirm Change</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    
 
 
     <button type="button" class="btn btn-primary" id="viewInstructionsBtn" style="display:none;">View Instructions</button> <!-- Initially hidden -->

@@ -100,6 +100,87 @@ document.addEventListener("DOMContentLoaded", function () {
     return isValid;
 }
 
+  //submisson
+  function selectRandomScenario() {
+    const randomNumber = Math.floor(Math.random() * scenarios.length); // Adjust according to your scenarios
+    return scenarios[randomNumber];
+}
+
+function simulateOutcome(scenario) {
+    const colors = ['red', 'blue']; // Simplified, adjust based on your actual scenario logic
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    const amount = randomColor === 'red' ? 20 : 60; // Simplified logic
+    return { color: randomColor, amount: amount };
+}
+
+function displayOutcome(scenario, outcome) {
+    const modalTitle = document.querySelector('#submitModal .modal-title');
+    modalTitle.textContent = 'Scenario Outcome';
+
+    const scenarioDescription = document.getElementById('scenarioDescription');
+    scenarioDescription.innerHTML = `
+        Round # Selected: Scenario ${scenario.num + 1}<br>
+        Here is what you landed on: ${outcome.color.toUpperCase()}<br>
+        Here is what you receive from the spin: $${outcome.amount}<br>
+        Here is how much you decided to give: $${userInputs[scenario.num]}
+    `;
+
+    const decisionInput = document.getElementById('decisionInput');
+    decisionInput.innerHTML = `
+        <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
+        <input type="number" id="newDonationAmount" value="${userInputs[scenario.num]}" />
+    `;
+
+    const confirmButton = document.getElementById('confirmChange');
+    confirmButton.onclick = () => updateDonation(scenario.num);
+
+    // Show the modal
+    const submitModal = new bootstrap.Modal(document.getElementById('submitModal'));
+    submitModal.show();
+}
+
+function updateDonation(scenarioIndex) {
+    const newDonation = document.getElementById('newDonationAmount').value;
+    userInputs[scenarioIndex] = newDonation; // Update the user input
+    alert('Your donation has been updated and the results are finalized.');
+    const submitModal = new bootstrap.Modal(document.getElementById('submitModal'));
+    submitModal.hide(); // Hide the modal after confirmation
+}
+
+//for scenario type b
+function displayOutcomeB(scenario, outcome) {
+  const modalTitle = document.querySelector('#submitModal .modal-title');
+  modalTitle.textContent = 'Scenario Outcome';
+
+  const scenarioDescription = document.getElementById('scenarioDescription');
+  scenarioDescription.innerHTML = `
+      Round # Selected: Scenario ${scenario.num + 1}<br>
+      Here is what you landed on: ${outcome.color.toUpperCase()}<br>
+      Here is what you receive from the spin: $${outcome.amount}<br>
+      Here is how much you decided to give: $${userInputs[scenario.num][outcome.color.toLowerCase()]}
+  `;
+
+  const decisionInput = document.getElementById('decisionInput');
+  decisionInput.innerHTML = `
+      <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
+      <input type="number" id="newDonationAmount" value="${userInputs[scenario.num][outcome.color.toLowerCase()]}" />
+  `;
+
+  const confirmButton = document.getElementById('confirmChange');
+  confirmButton.onclick = () => updateDonationB(scenario.num, outcome.color.toLowerCase());
+
+  // Show the modal
+  const submitModal = new bootstrap.Modal(document.getElementById('submitModal'));
+  submitModal.show();
+}
+
+function updateDonationB(scenarioIndex, color) {
+  const newDonation = document.getElementById('newDonationAmount').value;
+  userInputs[scenarioIndex][color] = newDonation; // Update the specific color donation
+  alert('Your donation has been updated and the results are finalized.');
+  const submitModal = new bootstrap.Modal(document.getElementById('submitModal'));
+  submitModal.hide(); // Hide the modal after confirmation
+}
 
 
   function nextInstruction() {
@@ -156,7 +237,10 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(selectedCharity);
 }
 
-function allFieldsFilled() {
+function allFieldsFilledA() {
+  return userInputs.every(input => input);
+}
+function allFieldsFilledB() {
   return userInputs.every(input => input.red && input.blue);
 } 
 
@@ -183,7 +267,18 @@ function showScenarioA(scenario, index) {
       submitBtn.textContent = 'Submit';
       submitBtn.classList.add('btn', 'btn-success', 'mt-3');
       submitBtn.onclick = () => {
-          document.getElementById('submitModal').style.display = 'block';
+        if (allFieldsFilledA()) {
+            // Proceed with showing the submission modal
+            const selectedScenario = selectRandomScenario();
+      const outcome = simulateOutcome(selectedScenario);
+            document.getElementById('submitModal').style.display = 'block';
+            displayOutcome(selectedScenario, outcome);
+
+            
+        } else {
+            // Alert the user or handle as needed
+            alert("Please fill in all required fields before submitting.");
+        }
       };
       inputDiv.appendChild(submitBtn);
   }
@@ -219,10 +314,15 @@ function showScenarioA(scenario, index) {
       const submitBtn = document.createElement('button');
       submitBtn.textContent = 'Submit';
       submitBtn.classList.add('btn', 'btn-success', 'mt-3');
+      
       submitBtn.onclick = () => {
-          if (allFieldsFilled()) {
+          if (allFieldsFilledB()) {
               // Proceed with showing the submission modal
+              const selectedScenario = selectRandomScenario();
+        const outcome = simulateOutcome(selectedScenario);
               document.getElementById('submitModal').style.display = 'block';
+              displayOutcomeB(selectedScenario, outcome);
+
           } else {
               // Alert the user or handle as needed
               alert("Please fill in all required fields before submitting.");
@@ -256,6 +356,8 @@ function showScenarioA(scenario, index) {
       pagination.appendChild(button);
     });
   }
+
+
 
 
 

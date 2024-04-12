@@ -21,7 +21,6 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Instructions</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
                 </div>
                 <div class="modal-body" id="instructions">
                     <!-- Instructions will be injected here by script.js -->
@@ -33,6 +32,21 @@
             </div>
         </div>
     </div>
+    <!-- New Modal for Submission Confirmation -->
+<div class="modal" id="submitModal" style="display:none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Submission Complete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Your responses have been recorded. Thank you for your participation!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <button type="button" class="btn btn-primary" id="viewInstructionsBtn" style="display:none;">View Instructions</button> <!-- Initially hidden -->
                 
@@ -59,7 +73,8 @@
                         <div class ="row justify-content-center">
                             <br/><br/>
                             <div class="user-input" id="user-input">
-                            <p>For your possible donation amounts, you can select any number up to (and including) $20 for the red ball and any number up to (and including) $60 for the blue ball.</p>
+                            <p>
+                                For your possible donation amounts, you can select any number up to (and including) $20 for the red ball and any number up to (and including) $60 for the blue ball.</p>
                             <p>Please select how much you give if you drew…</p>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text" id="inputGroup-sizing-lg">A red ball, in which case you have $20: $</span>

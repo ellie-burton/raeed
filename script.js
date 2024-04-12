@@ -75,8 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var mainChart;
     var originalBackgroundColors = [];
 
-    function setupChart(scenario) {
-        const ctx = document.getElementById('mainChart').getContext('2d');
+    function setupChart(scenario,chart) {
+        const ctx = document.getElementById(chart).getContext('2d');
         if (!ctx) {
             console.error("Chart canvas not found!");
             return;
@@ -234,7 +234,13 @@ function lightenColor(color) {
             console.error("Scenario div not found!");
             return;
         }
-        
+        const scenarioChart = document.getElementById("scenarioChart");
+        if (!scenarioChart) {
+            console.error("Scenario chart not found!");
+            return;
+        }
+        setupChart(scenario,'scenarioChart');
+
         // Update the scenario description based on whether it is state-contingent
         const scenarioDescription = stateContingent ? generateStateContingentDescription(scenario) : generateNonStateContingentDescription(scenario);
         scenarioDiv.innerHTML = `<h2>Scenario ${index + 1}</h2><p>${scenarioDescription}</p>`;
@@ -243,7 +249,11 @@ function lightenColor(color) {
         const inputDiv = document.getElementById("user-input");
         if (stateContingent) {
             inputDiv.innerHTML = `
-                <p>For your possible donation amounts, you can select any number up to $20 for a red ball and up to $60 for a blue ball.</p>
+            <p>Example 1: You decide to give $X to your chosen charity if the spinner lands on red and $Y if the spinner lands on blue. The spinner lands on red ($20), so you take $20 - $X home. 
+    </p><p>Example 2 You decide to give $X to your chosen charity to your chosen charity if the spinner lands on red and $Y if the spinner lands on blue. The spinner lands on blue ($60), so you take $60 - $Y home.
+    </p><p>We will now ask you how much you would like to pledge to share with your chosen charity. We will allow you to make the pledge based on the color that the spinner will land on. For your possible donation amounts, you can select any number up to (and including) $20 for a spin that lands on red and any number up to (and including) $60 for a spin that lands on blue.
+    </p>
+
                 <p>Please select how much you would give if you drew a...</p>
                 <div class="input-group input-group-lg">
                     <span class="input-group-text">$</span>
@@ -256,6 +266,10 @@ function lightenColor(color) {
             `;
         } else {
             inputDiv.innerHTML = `
+            <p>Example 1: You decide to give $X to your chosen charity. The spinner lands on red ($20), so you take $20-$X home. 
+            </p><p>Example 2: You decide to give $X. The spinner lands on blue ($60), so you take $60-$X.
+            </p><p>Since you do not know which color the spinner will land on, you cannot donate more than $20.</p>
+            
                 <p>How much do you want to give to your chosen charity?</p>
                 <div class="input-group input-group-lg">
                     <span class="input-group-text">$</span>
@@ -367,15 +381,14 @@ function lightenColor(color) {
         const newAmount = document.getElementById('newDonationAmount').value;
         console.log(`Updated donation for scenario #${scenarioNum} and color ${color}: $${newAmount}`);
         alert(`Thank you for completing the study! The application will now close.`)
-        window.close();
-        // Add further logic here to process this updated donation
+        window.location.reload();
     }
     
     function displayOutcome(scenario) {
         document.getElementById("spinBtn").addEventListener("click", function() {
             spinChart(displayResult);
         });
-                setupChart(scenario); // Reset the chart for the next spin
+                setupChart(scenario,'mainChart'); // Reset the chart for the next spin
           const modalTitle = document.querySelector('#submitModal .modal-title');
           modalTitle.textContent = 'Scenario Outcome';
       

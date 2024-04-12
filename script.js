@@ -71,7 +71,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const viewInstructionsBtn = document.getElementById("viewInstructionsBtn");
     const instructionDiv = document.getElementById("instructions");
     const userInputs = new Array(scenarios.length).fill('');
+    console.log("Before shuffle:", scenarios);
     scenarios.sort(() => Math.random() - 0.5);
+    console.log("After shuffle:", scenarios);
 
     var group = Math.random() < 0.5 ? "a" : "b";
     var mainChart;

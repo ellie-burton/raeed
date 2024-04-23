@@ -16,11 +16,14 @@
         <img src="./images/econ.png" alt="Logo" id="logo" style="max-height: 50px;">
     </header>
 
-    <div class="modal" id="instructionModal" style="display:block;"> <!-- Modal starts visible -->
+    
+   <div class="modal" id="instructionModal" style="display:block;"> <!-- Modal starts visible -->
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Instructions</h5>
+                                    <button type="button" class="close" id="closeModal" style="display: none;">&times;</button>
+
                 </div>
                 <div class="modal-body" id="instructions">
                     <!-- Instructions will be injected here by script.js -->
@@ -57,7 +60,7 @@
 
 
     <button type="button" class="btn btn-primary" id="viewInstructionsBtn" style="display:none;">View Instructions</button> <!-- Initially hidden -->
-                
+      
     <div class="container-fluid">
         <div class="row">
             <!-- Pagination Sidebar -->
@@ -102,6 +105,8 @@
             </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"> </script>
+        <script async defer src="https://apis.google.com/js/api.js"></script>
+
 
     <script src="script.js"></script>
 </body>

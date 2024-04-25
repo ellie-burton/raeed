@@ -70,9 +70,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const userInputs = new Array(scenarios.length).fill("");
   scenarios.sort(() => Math.random() - 0.5);
 
+  //populate the data items about the scenario order
+  //find the index of 1 in the scenario order
+  var scenario0Order = scenarios.findIndex((scenario) => scenario.num == 0);
+  var scenario1Order = scenarios.findIndex((scenario) => scenario.num == 1);
+  var scenario2Order = scenarios.findIndex((scenario) => scenario.num == 2);
+  var scenario3Order = scenarios.findIndex((scenario) => scenario.num == 3);
+  var scenario4Order = scenarios.findIndex((scenario) => scenario.num == 4);
+  var scenario5Order = scenarios.findIndex((scenario) => scenario.num == 5);
+
   var group = Math.random() < 0.5 ? "a" : "b";
   var mainChart;
   var originalBackgroundColors = [];
+
+  //initial data 
+  var totalTimeSpent = 0;
+  var comprehensionCheck1 = 1;
+  var comprehensionCheck2 = 1;
+  var recipientCharity = "unknown";
+  var currentTreatmentType = group;
+
+
 
   function setupChart(scenario, chart) {
     const ctx = document.getElementById(chart).getContext("2d");
@@ -140,33 +158,6 @@ document.addEventListener("DOMContentLoaded", function () {
       handleSubmission(); 
     }
   }
-
-  //send email
-  function sendEmail() {
-    var url ='https://script.google.com/macros/s/AKfycbz3ZaBE1aGxYn3zVQhthH7hVzUZoRNUbtzi1h6x6vnLppXghDanp5ImUzS3EH16llREgg/exec';
-    var data = {
-        email: 'aeburton3@crimson.ua.edu', // Set the recipient email address
-        subject: 'Test Email',
-        message: 'Test'
-    };
-
-    // Create a new XMLHttpRequest
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-
-    // Handle response
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log('Email sent successfully');
-            alert('Email sent successfully!');
-        }
-    };
-
-    // Send the request with data
-    xhr.send(JSON.stringify(data));
-}
-
 
   function updateUserInputs() {
     if (group === "a") {
@@ -373,7 +364,17 @@ function updateInstructionText() {
     if (validateAnswers()) {
       nextInstruction();
     } else {
+      //set comprehensioncheck value to false for appropriate value
+      if(currentStep == 3){
+        comprehensionCheck1 = 0;
+      }else{
+      comprehensionCheck2 = 0;
+      }
       alert("Please answer the question correctly before proceeding.");
+    }
+    if(!review&&currentStep>=instructions.length){
+      //calculate time spent
+      totalTimeSpent = new Date() - startTime;
     }
   });
 
@@ -465,12 +466,37 @@ function updateInstructionText() {
   function finalSubmit() {
     console.log("Entered final submit function");
 
-    sendEmail();
-
-    setTimeout(() => {
-        window.location.reload()
-        }, 10000);
-}
+      console.log("Submission Data:", userInputs);
+      
+      // Prepare data object
+      var formData = {
+          TimeReadingInstructions: totalTimeSpent, // Implement this function based on your timer logic
+          ComprehensionQ1: comprehensionCheck1, // These should pull the current value from your input mechanism
+          ComprehensionQ2: comprehensionCheck2,
+          RecipientCharity: recipientCharity, // Ensure you have a function or way to get the chosen charity
+          Treatment: group // Determine how you get this information based on your scenarios
+      };
+  
+      // Send data to your Apps Script Web App URL
+      fetch('https://script.google.com/macros/s/AKfycbwLDvq61wiri1VkGtov0a7y-Ft2TUHR1MBIwanRaBdcx0NyWWHIkaz1VGtihsxKKjJ-/exec', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+      })
+      .then(response => response.text())
+      .then(data => {
+          console.log('Success:', data);
+          alert('Submission successful!');
+      })
+      .catch(error => console.error('Error:', error));
+  
+      
+//     setTimeout(() => {
+//         window.location.reload()
+//         }, 10000);
+  }
 
   let selectedScenarioNum = -1;
   function selectRandomScenario() {
@@ -577,10 +603,11 @@ function updateInstructionText() {
 
     // Additional logic to process submission
   }
-
-
-
+  //set initial instruction to display
   document.getElementById(
     "instructions"
   ).innerHTML = `<p>${instructions[0].text}</p>`;
+  //start time
+  let startTime = new Date();
+
 });

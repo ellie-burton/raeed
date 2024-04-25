@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Submit Form Data</title>
+</head>
+<body>
+<form id="dataForm">
+    <label for="timeReadingInstructions">Time Reading Instructions:</label>
+    <input type="text" id="timeReadingInstructions" name="TimeReadingInstructions"><br>
+    <label for="comprehensionQ1">Comprehension Q1 (0 or 1):</label>
+    <input type="text" id="comprehensionQ1" name="ComprehensionQ1"><br>
+    <label for="comprehensionQ2">Comprehension Q2 (0 or 1):</label>
+    <input type="text" id="comprehensionQ2" name="ComprehensionQ2"><br>
+    <label for="recipientCharity">Recipient Charity:</label>
+    <input type="text" id="recipientCharity" name="RecipientCharity"><br>
+    <label for="treatment">Treatment (State or Non-State Contingent):</label>
+    <input type="text" id="treatment" name="Treatment"><br>
+    <input type="button" value="Submit" onclick="submitData()">
+</form>
+
+<script>
+function submitData() {
+    var formData = new FormData(document.getElementById('dataForm'));
+    fetch('https://script.google.com/macros/s/AKfycbzJHfeohm9Qq9t5YkWoI6AgRmifoLYKhllFsPHEywnWByv6UmrUIV-icqNzFr-NVE1h/exec', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => alert(data))
+    .catch(error => console.error('Error:', error));
+}
+</script>
+</body>
+</html>

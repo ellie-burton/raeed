@@ -76,7 +76,11 @@ const instructions = [
   },
   {
     step: 5,
-    text: "Choose a recipient for all your donations from the following list of charities: <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio1'><label class='form-check-label' for='charityRadio1'> Tuscaloosa Public Library</label></div><div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio2'><label class='form-check-label' for='charityRadio2'> Tuscaloosa YMCA</label></div><div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio3'><label class='form-check-label' for='charityRadio3'> RISE Center (Early childhood preschool services)</label></div><div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio4'><label class='form-check-label' for='charityRadio4'> Tuscaloosa Metro Animal Shelter</label></div>",
+    text: `Choose a recipient for all your donations from the following list of charities: <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio1'><label class='form-check-label' for='charityRadio1'><b> Tuscaloosa Public Library: </b>Description from their <a href = 'https://www.tuscaloosa-library.org/support-the-library/' target='_blank'>website</a>: “The Tuscaloosa Public Library is the City’s and County’s public library for all residents to utilize for their educational, workforce, research and entertainment needs. TPL has been serving this community for more than 100 years and looks to continue that role for the next 100 years. Your gift to the Tuscaloosa Public Library will help maintain the quality of the Library’s collections, diverse programming, informational resources and accessible to technology.”</label></div>
+    <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio2'><label class='form-check-label' for='charityRadio2'><b> Tuscaloosa YMCA: </b>Description from their <a href='https://www.ymcatuscaloosa.org/financial' target='_blank'>website</a>: “The YMCA of Tuscaloosa embraces people of all ages, incomes, abilities, religions and ethnic backgrounds; we're for everyone. We work to break barriers of isolation and create the connections between people that add meaning to life. Individuals and families who cannot afford to pay full price for memberships or our programs still deserve the life-enriching experiences the Y offers. At the Y, we never turn anyone away because of an inability to pay.”</label></div>
+    <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio3'><label class='form-check-label' for='charityRadio3'> <b>RISE Center: </b>Description from their <a href='https://risecenter.ua.edu/' target='_blank'>website</a>: “The YMCA of Tuscaloosa embraces people of all ages, incomes, abilities, religions and ethnic backgrounds; we're for everyone. We work to break barriers of isolation and create the connections between people that add meaning to life. Individuals and families who cannot afford to pay full price for memberships or our programs still deserve the life-enriching experiences the Y offers. At the Y, we never turn anyone away because of an inability to pay.”</label></div>
+    <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio4'><label class='form-check-label' for='charityRadio4'><b> Tuscaloosa Metro Animal Shelter: </b>Description from their <a href='https://give.metroanimalshelter.org/give/296293/#!/donation/checkout' target='_blank'>website</a>: "Tuscaloosa Metro Animal Shelter is the only stray receiving facility for Tuscaloosa County, Tuscaloosa City, and the City of Northport. All animals picked up by the three municipal animal control agencies in Tuscaloosa County are brought to TMAS… Every year we get in thousands of lost and abandoned pets into our facility.  Donations from our amazing supporters allow us to treat, rehabilitate, foster, and adopt them out!"</label></div>",
+  `
   },
 ];
 // Example of correct answers defined in an object
@@ -535,7 +539,6 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append("Scenario3Order", scenario3Order);
     formData.append("Scenario4Order", scenario4Order);
     formData.append("Scenario5Order", scenario5Order);
-
       formData.append("Scenario0Red", scenarios[scenario0Order].redVal);
       formData.append("Scenario0Blue", scenarios[scenario0Order].blueVal);
       formData.append("Scenario1Red", scenarios[scenario1Order].redVal);
@@ -548,7 +551,6 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("Scenario4Blue", scenarios[scenario4Order].blueVal);
       formData.append("Scenario5Red", scenarios[scenario5Order].redVal);
       formData.append("Scenario5Blue", scenarios[scenario5Order].blueVal);
-      console.log(amountReceived);
     formData.append("ScenarioSelected", selectedScenarioNum);
     formData.append("AmountReceived", amountReceived);
     formData.append("OriginalGift", originalGift);
@@ -567,7 +569,9 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => response.text())
       .then((data) => {
         console.log("Success:", data);
-        alert("Submission successful!");
+        alert(
+          `Thank you for completing the study! Please show this screen to the experiment administrator in order to recieve your payout of $${amountPaid}. `
+        );
       })
       .catch((error) => console.error("Error:", error));
   }
@@ -646,53 +650,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateDonation(color) {
     newAmount = document.getElementById("newDonationAmount").value;
-    amountPaid = amountReceived-newAmount;
+    var prevAmt = -1;
     console.log(`New donation amount: $${newAmount}`);
     if (color == "red") {
         if (scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal != newAmount) {
           edited = true;
           scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal = newAmount;
         }
+        else{
+          amountPaid = amountReceived-scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal;
+        }
+
+        amountPaid = amountReceived-newAmount;
+
       }
       if (color == "blue") {
         if (scenarios.find((scenario) => scenario.num === selectedScenarioNum).blueVal != newAmount) {
           edited = true;
           scenarios.find((scenario) => scenario.num === selectedScenarioNum).blueVal = newAmount;
         }
+        else{
+          amountPaid = amountReceived-scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal;
+        }
+        amountPaid = amountReceived-newAmount;
       }
-
-    alert(
-      `Thank you for completing the study! The application will now close.`
-    );
   }
 
   function displayOutcome(scenario) {
-    console.log("Entered display outcome function");
+    const scenarioDescription = document.getElementById("scenarioDescription");
+
     //if certainty scenario, don't need to spin
-    if (
-      scenario.redMin == 10 ||
-      (scenario.redMin == 0 && scenario.redMax != 10)
-    ) {
       //don't spin, just say what the outcome is
       if (scenario.redMin == 10) {
+        scenarioDescription.innerHTML = `Round # Selected: Scenario ${scenario.orderNum + 1}. This was a fixed scenario in which you recieve $20.<br>`;
         outcome = "red";
-      } else {
+        displayResult(outcome);
+      } else if((scenario.redMin == 0 && scenario.redMax != 10)){
+        scenarioDescription.innerHTML = `Round # Selected: Scenario ${scenario.orderNum + 1}. This was a fixed scenario in which you recieve $60.<br>`;
         outcome = "blue";
+        displayResult(outcome);
       }
-      displayResult(outcome);
-    } else {
+      
+    else {
+      setupChart(scenario, "mainChart"); // Reset the chart for the next spin
+
+      scenarioDescription.innerHTML = `Round # Selected: Scenario ${
+        scenario.orderNum + 1
+      }<br>`;
       document.getElementById("spinBtn").addEventListener("click", function () {
         spinChart(displayResult);
       });
-      setupChart(scenario, "mainChart"); // Reset the chart for the next spin
     }
     const modalTitle = document.querySelector("#submitModal .modal-title");
     modalTitle.textContent = "Scenario Outcome";
 
-    const scenarioDescription = document.getElementById("scenarioDescription");
-    scenarioDescription.innerHTML = `Round # Selected: Scenario ${
-      scenario.num + 1
-    }<br>`;
+    
   }
 
   function handleSubmission() {

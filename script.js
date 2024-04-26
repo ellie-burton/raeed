@@ -625,7 +625,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     else if (group === "b") {
       scenarioDescription.innerHTML += `
-            Wheel landed on: ${color.toUpperCase()}<br>
+            Wheel landed on: ${outcome.toUpperCase()}<br>
             Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $`;
       if (color == "red") {
@@ -642,7 +642,7 @@ document.addEventListener("DOMContentLoaded", function () {
         //group a
     } else {
       scenarioDescription.innerHTML += `
-            Wheel landed on: ${color.toUpperCase()}<br>
+            Wheel landed on: ${outcome.toUpperCase()}<br>
             Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $${
               scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal

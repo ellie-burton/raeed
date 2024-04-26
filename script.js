@@ -1,33 +1,56 @@
-const scenarios = [
+let scenarios = [
   {
     num: 0,
+    orderNum: -1,
     redMin: 0,
     redMax: 10,
+    redVal: -1,
+    blueVal: -1,
   },
   {
     num: 1,
+    orderNum: -1,
+
     redMin: 2,
     redMax: 8,
+    redVal: -1,
+    blueVal: -1,
   },
   {
     num: 2,
+    orderNum: -1,
+
     redMin: 4,
     redMax: 6,
+    redVal: -1,
+    blueVal: -1,
   },
   {
     num: 3,
+    orderNum: -1,
+
     redMin: 5,
     redMax: 5,
+    redVal: -1,
+    blueVal: -1,
   },
   {
     num: 4,
+    orderNum: -1,
+
     redMin: 10,
     redMax: 10,
+    redVal: -1,
+    blueVal: -1,
   },
   {
     num: 5,
+    orderNum: -1,
+
     redMin: 0,
     redMax: 0,
+    redVal: -1,
+    blueVal: -1,
   },
 ];
 const instructions = [
@@ -67,23 +90,33 @@ document.addEventListener("DOMContentLoaded", function () {
   const instructionModal = document.getElementById("instructionModal");
   const viewInstructionsBtn = document.getElementById("viewInstructionsBtn");
   const instructionDiv = document.getElementById("instructions");
-  const userInputs = new Array(scenarios.length).fill("");
-  scenarios.sort(() => Math.random() - 0.5);
+  //RANDOMIZE ORDER OF SCENARIOS
+  for (let i = scenarios.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+    [scenarios[i], scenarios[j]] = [scenarios[j], scenarios[i]]; // swap elements
+  }
 
   //populate the data items about the scenario order
   //find the index of 1 in the scenario order
   var scenario0Order = scenarios.findIndex((scenario) => scenario.num == 0);
+  scenarios.find((scenario) => scenario.num == 0).orderNum = scenario0Order;
   var scenario1Order = scenarios.findIndex((scenario) => scenario.num == 1);
+  scenarios.find((scenario) => scenario.num == 1).orderNum = scenario0Order;
   var scenario2Order = scenarios.findIndex((scenario) => scenario.num == 2);
+  scenarios.find((scenario) => scenario.num == 2).orderNum = scenario0Order;
   var scenario3Order = scenarios.findIndex((scenario) => scenario.num == 3);
+  scenarios.find((scenario) => scenario.num == 3).orderNum = scenario0Order;
   var scenario4Order = scenarios.findIndex((scenario) => scenario.num == 4);
+  scenarios.find((scenario) => scenario.num == 4).orderNum = scenario0Order;
   var scenario5Order = scenarios.findIndex((scenario) => scenario.num == 5);
+  scenarios.find((scenario) => scenario.num == 5).orderNum = scenario0Order;
+
 
   var group = Math.random() < 0.5 ? "a" : "b";
   var mainChart;
   var originalBackgroundColors = [];
 
-  //initial data 
+  //initial data
   var totalTimeSpent = 0;
   var comprehensionCheck1 = 1;
   var comprehensionCheck2 = 1;
@@ -92,9 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var amountRecieved = -1;
   var originalGift = -1;
   var newGift = -1;
-  var amountPaid=-1;
-
-
+  var amountPaid = -1;
 
   function setupChart(scenario, chart) {
     const ctx = document.getElementById(chart).getContext("2d");
@@ -159,46 +190,64 @@ document.addEventListener("DOMContentLoaded", function () {
       window.scrollTo(0, 0); // Scroll to top when moving to the next scenario
     } else {
       document.getElementById("nextScenarioBtn").style.display = "none";
-      handleSubmission(); 
+      handleSubmission();
     }
   }
 
   function updateUserInputs() {
-    if (group === "a") {
-        userInputs[currentStep] = document.getElementById(`input${currentStep}`).value;
+    if (
+      group === "a" ||
+      scenarios[currentStep].redMin == 10 ||
+      (scenarios[currentStep].redMin == 0 && scenarios[currentStep].redMax == 0)
+    ) {
+      scenarios[currentStep].redVal = document.getElementById(
+        `input${currentStep}`
+      ).value;
+      scenarios[currentStep].blueVal = document.getElementById(
+        `input${currentStep}`
+      ).value;
+    } else {
+      scenarios[currentStep].redVal = document.getElementById(
+        `redInput${currentStep}`
+      ).value;
+      scenarios[currentStep].blueVal = document.getElementById(
+        `blueInput${currentStep}`
+      ).value;
     }
-    else {
-        //deal with certainty scenario
-        if(scenarios[currentStep].redMin == 10 || (scenarios[currentStep].redMin == 0 && scenarios[currentStep].redMax != 10)){  
-            userInputs[currentStep] = {red: document.getElementById(`input${currentStep}`).value,
-            blue: document.getElementById(`input${currentStep}`).value};
-        }
-        else{
-            userInputs[currentStep] = {
-                //if certainty scenario, only one input
-                red: document.getElementById(`redInput${currentStep}`).value,
-                blue: document.getElementById(`blueInput${currentStep}`).value,
-    
-            };
-        }
-        
-    }
-    }
-
+  }
 
   function validateCurrentInput() {
     //if certainty scenario, check if input is valid
-    if(scenarios[currentStep].redMin == 10 || scenarios[currentStep].redMin == 0){
-        if(scenarios[currentStep].redMin == 10){
-            if(userInputs[currentStep] > 20 || userInputs[currentStep] < 0){
-                return false;
-            }
-        }else{
-            if(userInputs[currentStep] > 60 || userInputs[currentStep] < 0){
-                return false;
-            }
+    if (
+      scenarios[currentStep].redMin == 10 ||
+      (scenarios[currentStep].redMin == 0 && scenarios[currentStep].redMax == 0)
+    ) {
+      console.log("Certainty Scenario");
+      const input = parseInt(
+        document.getElementById(`input${currentStep}`).value,
+        10
+      );
+      if (scenarios[currentStep].redMin == 10) {
+        console.log("Certainly RED i.e. must be under 20");
+        if (input > 20 || input < 0) {
+          console.log(
+            "Invalid input for certainly RED:" + scenarios[currentStep].redVal
+          );
+          return false;
         }
-        return true;
+      } else if (
+        scenarios[currentStep].redMin == 0 &&
+        scenarios[currentStep].redMax == 0
+      ) {
+        console.log("Certainly BLUE i.e. must be under 60");
+        if (input > 60 || input < 0) {
+          console.log(
+            "Invalid input for certainly BLUE:" + scenarios[currentStep].blueVal
+          );
+          return false;
+        }
+      }
+      return true;
     }
     const currentIndex = currentStep; // Assuming currentStep is your current scenario index
     let inputValid = true;
@@ -246,13 +295,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    function generateNonStateContingentDescription(scenario) {
-        return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
-      }
-    
-      function generateStateContingentDescription(scenario) {
-        return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
-      }
+  function generateNonStateContingentDescription(scenario) {
+    return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
+  }
+
+  function generateStateContingentDescription(scenario) {
+    return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
+  }
 
   function generateChartData(scenario) {
     var redCount = scenario.redMin;
@@ -281,13 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
       values: yValues,
       colors: barColors,
     };
-  }
-  function allFieldsFilled() {
-    if (group === "a") {
-      return userInputs.every((input) => input);
-    } else {
-      return userInputs.every((input) => input.red && input.blue);
-    }
   }
 
   function lightenColor(color) {
@@ -339,11 +381,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }, flashDuration);
   }
 
-function updateInstructionText() {
+  function updateInstructionText() {
     if (instructions[currentStep]) {
-        instructionDiv.innerHTML = `<p>${instructions[currentStep].text}</p>`;
+      instructionDiv.innerHTML = `<p>${instructions[currentStep].text}</p>`;
     }
-}
+  }
   function validateAnswers() {
     if (correctAnswers.hasOwnProperty(currentStep)) {
       const userAnswer = document.querySelector(
@@ -355,34 +397,35 @@ function updateInstructionText() {
   }
 
   document.getElementById("continue").addEventListener("click", function () {
-    if(review&&currentStep>3){
-        //if in review mode, only go through step 
-        //close modal after step 3
-        instructionModal.style.display = "none";
-
+    if (review && currentStep > 3) {
+      //if in review mode, only go through step
+      //close modal after step 3
+      instructionModal.style.display = "none";
     }
     //check charity selection
-    if(currentStep == 5){
-        var charityRadio = document.querySelector('input[name="charityRadioGroup"]:checked');
-        if(charityRadio){
-            recipientCharity = charityRadio.labels[0].innerText;
-        }else{
-            alert("Please select a charity before proceeding.");
-            return;
-        }
+    if (currentStep == 5) {
+      var charityRadio = document.querySelector(
+        'input[name="charityRadioGroup"]:checked'
+      );
+      if (charityRadio) {
+        recipientCharity = charityRadio.labels[0].innerText;
+      } else {
+        alert("Please select a charity before proceeding.");
+        return;
+      }
     }
     if (validateAnswers()) {
       nextInstruction();
     } else {
       //set comprehensioncheck value to false for appropriate value
-      if(currentStep == 3){
+      if (currentStep == 3) {
         comprehensionCheck1 = 0;
-      }else{
-      comprehensionCheck2 = 0;
+      } else {
+        comprehensionCheck2 = 0;
       }
       alert("Please answer the question correctly before proceeding.");
     }
-    if(!review&&currentStep>=instructions.length){
+    if (!review && currentStep >= instructions.length) {
       //calculate time spent
       totalTimeSpent = new Date() - startTime;
     }
@@ -406,7 +449,7 @@ function updateInstructionText() {
 
   function nextInstruction() {
     currentStep++;
-    if ((currentStep >= instructions.length) || (currentStep > 2 && review)) {
+    if (currentStep >= instructions.length || (currentStep > 2 && review)) {
       instructionModal.style.display = "none";
       viewInstructionsBtn.style.display = "block";
       currentStep = 0; // Reset to the start
@@ -423,11 +466,17 @@ function updateInstructionText() {
   function showScenario(scenario, index, stateContingent) {
     const scenarioDiv = document.getElementById("scenario");
     const inputDiv = document.getElementById("user-input");
-    if (scenario.redMin == 10 || scenario.redMin == 0 && scenario.redMax != 10) {
-        //clear the chart
-        document.getElementById("scenarioChart").style.display = "none";
+    //certainty scenario
+    if (
+      scenario.redMin == 10 ||
+      (scenario.redMin == 0 && scenario.redMax != 10)
+    ) {
+      //clear the chart
+      document.getElementById("scenarioChart").style.display = "none";
 
-      scenarioDiv.innerHTML = `<h2>Scenario ${index+1}</h2><p>This scenario has a fixed outcome with no random elements.</p>`;
+      scenarioDiv.innerHTML = `<h2>Scenario ${
+        index + 1
+      }</h2><p>This scenario has a fixed outcome with no random elements.</p>`;
       inputDiv.innerHTML = `<p>You have been given $${
         scenario.redMin === 10 ? 20 : 60
       }. You can split this sum between you and your chosen charity. If you decide to give $X to your chosen charity, then you will take $${
@@ -437,11 +486,11 @@ function updateInstructionText() {
       You cannot donate more than $${
         scenario.redMin === 10 ? 20 : 60
       }</p><p>How much would you like to pledge to share with your chosen charity?</p>
-                <input type="number" class="form-control" placeholder="Enter donation amount" value="${
-                  userInputs[index] || ""
-                }" id="input${index}">`;
+                  <input type="number" class="form-control" placeholder="Enter your donation" value="${
+                    scenario.redVal === -1 ? "" : scenario.redVal
+                  }" id="input${index}">`;
     } else {
-        document.getElementById("scenarioChart").style.display = "block";
+      document.getElementById("scenarioChart").style.display = "block";
       setupChart(scenario, "scenarioChart");
       const scenarioDescription = stateContingent
         ? generateStateContingentDescription(scenario)
@@ -459,84 +508,77 @@ function updateInstructionText() {
   function generateStateInputs(index) {
     return `<p>Select donation amounts based on color outcomes...</p>
             <input type="number" class="form-control" placeholder="Amount if red (up to $20)" value="${
-              userInputs[index].red || ""
+              scenarios[index].redVal === -1 ? "" : scenarios[index].redVal
             }" id="redInput${index}">
             <input type="number" class="form-control" placeholder="Amount if blue (up to $60)" value="${
-              userInputs[index].blue || ""
+              scenarios[index].blueVal === -1 ? "" : scenarios[index].blueVal
             }" id="blueInput${index}">`;
   }
 
   function generateNonStateInputs(index) {
     return `<p>Enter donation amount (up to $20)</p>
             <input type="number" class="form-control" placeholder="Enter donation amount" value="${
-              userInputs[index] || ""
+              scenarios[index].redVal === -1 ? "" : scenarios[index].redVal
             }" id="input${index}">`;
   }
 
   function finalSubmit() {
     var formData = new FormData();
-    formData.append('TimeReadingInstructions', totalTimeSpent);
-    formData.append('ComprehensionQ1', comprehensionCheck1);
-    formData.append('ComprehensionQ2', comprehensionCheck2);
-    formData.append('RecipientCharity', recipientCharity);
-    formData.append('Treatment', group);
-    formData.append('Scenario0Order', scenario0Order);
-    formData.append('Scenario1Order', scenario1Order);
-    formData.append('Scenario2Order', scenario2Order);
-    formData.append('Scenario3Order', scenario3Order);
-    formData.append('Scenario4Order', scenario4Order);
-    formData.append('Scenario5Order', scenario5Order);
-    if(group === "a"){
-      formData.append('Scenario1Red', userInputs[1]);
-      formData.append('Scenario2Red', userInputs[2]);
-      formData.append('Scenario3Red', userInputs[3]);
-      formData.append('Scenario4Red', userInputs[4]);
-      formData.append('Scenario5Red', userInputs[5]);
-    }else{
-      formData.append('Scenario0Red', userInputs[0].red||-1);
-      formData.append('Scenario0Blue', userInputs[0].blue||-1);
-    formData.append('Scenario1Red',userInputs[1].red||-1);
-    formData.append('Scenario1Blue',userInputs[1].blue||-1);
-    formData.append('Scenario2Red',userInputs[2].red||-1);
-    formData.append('Scenario2Blue',userInputs[2].blue||-1);
-    formData.append('Scenario3Red',userInputs[3].red||-1);
-    formData.append('Scenario3Blue',userInputs[3].blue||-1);
-    formData.append('Scenario4Red',userInputs[4].red||-1);
-    formData.append('Scenario4Blue',userInputs[4].blue||-1);
-    formData.append('Scenario5Red',userInputs[5].red||-1);
-    formData.append('Scenario5Blue',userInputs[5].blue||-1);
-    }
-    formData.append('ScenarioSelected', selectedScenarioNum);
-    formData.append('AmountRecieved', amountRecieved); 
-    formData.append('OriginalGift', originalGift);
-    formData.append('Revise', edited);
-    formData.append('NewAnswer', newGift);
-    formData.append('AmountPaid', amountPaid);
+    formData.append("TimeReadingInstructions", totalTimeSpent);
+    formData.append("ComprehensionQ1", comprehensionCheck1);
+    formData.append("ComprehensionQ2", comprehensionCheck2);
+    formData.append("RecipientCharity", recipientCharity);
+    formData.append("Treatment", group);
+    formData.append("Scenario0Order", scenario0Order);
+    formData.append("Scenario1Order", scenario1Order);
+    formData.append("Scenario2Order", scenario2Order);
+    formData.append("Scenario3Order", scenario3Order);
+    formData.append("Scenario4Order", scenario4Order);
+    formData.append("Scenario5Order", scenario5Order);
+
+      formData.append("Scenario0Red", scenarios[scenario0Order].redVal);
+      formData.append("Scenario0Blue", scenarios[scenario0Order].blueVal);
+      formData.append("Scenario1Red", scenarios[scenario1Order].redVal);
+      formData.append("Scenario1Blue", scenarios[scenario1Order].blueVal);
+      formData.append("Scenario2Red", scenarios[scenario2Order].redVal);
+      formData.append("Scenario2Blue", scenarios[scenario2Order].blueVal);
+      formData.append("Scenario3Red", scenarios[scenario3Order].redVal);
+      formData.append("Scenario3Blue", scenarios[scenario3Order].blueVal);
+      formData.append("Scenario4Red", scenarios[scenario4Order].redVal);
+      formData.append("Scenario4Blue", scenarios[scenario4Order].blueVal);
+      formData.append("Scenario5Red", scenarios[scenario5Order].redVal);
+      formData.append("Scenario5Blue", scenarios[scenario5Order].blueVal);
+    formData.append("ScenarioSelected", selectedScenarioNum);
+    formData.append("AmountRecieved", amountRecieved);
+    formData.append("OriginalGift", originalGift);
+    formData.append("Revise", edited);
+    formData.append("NewAnswer", newGift);
+    formData.append("AmountPaid", amountPaid);
 
     // Send data to your Apps Script Web App URL
-    let url = 'https://script.google.com/macros/s/AKfycbwL9lZHsmWympt7wCWRBq6sxRWw_b-SlDNyOpPwIkX9S3QgFPbzR5SSyCbtDMExBmHI/exec';
+    let url =
+      "https://script.google.com/macros/s/AKfycby21YkZ0pjSNMUG4YOmzzYj4RLPq4ZdDEHbXrw99jPcdlkI_ERkWd6XlnsArF-h_pPB/exec";
     fetch(url, {
-        method: 'POST',
-        mode: 'no-cors', // Note: 'no-cors' mode means you won't be able to read the response
-        body: new URLSearchParams(formData)
+      method: "POST",
+      mode: "no-cors", // Note: 'no-cors' mode means you won't be able to read the response
+      body: new URLSearchParams(formData),
     })
-    .then(response => response.text())
-    .then(data => {
-        console.log('Success:', data);
-        alert('Submission successful!');
-    })
-    .catch(error => console.error('Error:', error));
-}
+      .then((response) => response.text())
+      .then((data) => {
+        console.log("Success:", data);
+        alert("Submission successful!");
+      })
+      .catch((error) => console.error("Error:", error));
+  }
 
   let selectedScenarioNum = -1;
   function selectRandomScenario() {
     const randomNumber = Math.floor(Math.random() * scenarios.length); // Adjust according to your scenarios
     selectedScenarioNum = randomNumber;
-    return scenarios[randomNumber];
+    return scenarios.find((scenario) => scenario.num === randomNumber);
   }
 
   function displayResult(outcome) {
-
     // Hide the submit button
     document.getElementById("spinBtn").style.display = "none";
 
@@ -549,6 +591,7 @@ function updateInstructionText() {
     const amount = color === "red" ? 20 : 60; // Example amounts for each color
     //save the moneyRecieved
     amountRecieved = amount;
+    console.log(`amountRecieved: `+amountRecieved);
 
     const scenarioDescription = document.getElementById("scenarioDescription");
 
@@ -557,10 +600,10 @@ function updateInstructionText() {
             Wheel landed on: ${color.toUpperCase()}<br>
             Here is what you receive from the spin: $${amount}<br>
             Here is how much you decided to give: $`;
-      if (color =='red'){
-        scenarioDescription.innerHTML += `${userInputs[selectedScenarioNum].red}<br>`;
+      if (color == "red") {
+        scenarioDescription.innerHTML += `${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}<br>`;
       } else {
-        scenarioDescription.innerHTML += `${userInputs[selectedScenarioNum].blue}<br>`;
+        scenarioDescription.innerHTML += `${scenarios.find((scenario) => scenario.num === selectedScenarioNum).blueVal}<br>`;
       }
 
       const decisionInput = document.getElementById("decisionInput");
@@ -573,80 +616,68 @@ function updateInstructionText() {
             Wheel landed on: ${color.toUpperCase()}<br>
             Here is what you receive from the spin: $${amount}<br>
             Here is how much you decided to give: $${
-              userInputs[selectedScenarioNum]
+              scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal
+              //TODO: add if statement for blue value
             }
         `;
 
       const decisionInput = document.getElementById("decisionInput");
       decisionInput.innerHTML = `
             <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
-            <input type="number" id="newDonationAmount" value="${userInputs[selectedScenarioNum]}" />
+            <input type="number" id="newDonationAmount" value="${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}" />
+            //TODO: add if statement for blue value
         `;
     }
 
     const confirmButton = document.getElementById("confirmChange");
     // Make sure to pass the current scenario number and color to the update function
     confirmButton.addEventListener("click", function () {
-      updateDonation(userInputs[selectedScenarioNum], color);
+      updateDonation(color); //TODO: add if statement for blue value
       finalSubmit();
     });
-}
+  }
 
-  function updateDonation(scenarioNum, color) {
+  function updateDonation(color) {
     const newAmount = document.getElementById("newDonationAmount").value;
-
-    if (group === "a") {
-      if (userInputs[scenarioNum] != newAmount ){
-        edited = true;
-      }
-      userInputs[scenarioNum] = newAmount;
-    }
-    else{
-      if (color == "red" ){
-        if (userInputs[scenarioNum].red != newAmount ){
-            edited = true;
-            userInputs[scenarioNum].red = newAmount;
-          }
-        
-    }
-    if (color == "blue" ){
-      if (userInputs[scenarioNum].blue != newAmount ){
+    console.log(`New donation amount: $${newAmount}`);
+    if (color == "red") {
+        if (scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal != newAmount) {
           edited = true;
-          userInputs[scenarioNum].blue = newAmount;
-
+          scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal = newAmount;
         }
-  }
-  }
+      }
+      if (color == "blue") {
+        if (scenarios.find((scenario) => scenario.num === selectedScenarioNum).blueVal != newAmount) {
+          edited = true;
+          scenarios.find((scenario) => scenario.num === selectedScenarioNum).blueVal = newAmount;
+        }
+      }
 
-    //check if user updated amount
-
-    console.log(
-      `Updated donation for scenario #${scenarioNum} and color ${color}: $${newAmount}`
-    );
     alert(
       `Thank you for completing the study! The application will now close.`
     );
-
   }
 
   function displayOutcome(scenario) {
     console.log("Entered display outcome function");
     //if certainty scenario, don't need to spin
-    if(scenario.redMin == 10 || (scenario.redMin == 0 && scenario.redMax != 10)){
-        //don't spin, just say what the outcome is
-        if(scenario.redMin == 10){
-            outcome = "red";
-        }else{
-            outcome = "blue";
-        }
-        displayResult(outcome);
+    if (
+      scenario.redMin == 10 ||
+      (scenario.redMin == 0 && scenario.redMax != 10)
+    ) {
+      //don't spin, just say what the outcome is
+      if (scenario.redMin == 10) {
+        outcome = "red";
+      } else {
+        outcome = "blue";
+      }
+      displayResult(outcome);
+    } else {
+      document.getElementById("spinBtn").addEventListener("click", function () {
+        spinChart(displayResult);
+      });
+      setupChart(scenario, "mainChart"); // Reset the chart for the next spin
     }
-    else{
-    document.getElementById("spinBtn").addEventListener("click", function () {
-      spinChart(displayResult);
-    });
-    setupChart(scenario, "mainChart"); // Reset the chart for the next spin
-}
     const modalTitle = document.querySelector("#submitModal .modal-title");
     modalTitle.textContent = "Scenario Outcome";
 
@@ -657,7 +688,6 @@ function updateInstructionText() {
   }
 
   function handleSubmission() {
-    console.log("Submission Data:", userInputs);
     document.getElementById("submitModal").style.display = "block";
     const selectedScenario = selectRandomScenario();
     displayOutcome(selectedScenario);
@@ -670,5 +700,4 @@ function updateInstructionText() {
   ).innerHTML = `<p>${instructions[0].text}</p>`;
   //start time
   let startTime = new Date();
-
 });

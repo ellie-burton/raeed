@@ -122,9 +122,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var comprehensionCheck2 = 1;
   var recipientCharity = "unknown";
   var edited = false;
-  var amountRecieved = -1;
+  var amountReceived = -1;
   var originalGift = -1;
-  var newGift = -1;
+  var newAmount = -1;
   var amountPaid = -1;
 
   function setupChart(scenario, chart) {
@@ -548,11 +548,12 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("Scenario4Blue", scenarios[scenario4Order].blueVal);
       formData.append("Scenario5Red", scenarios[scenario5Order].redVal);
       formData.append("Scenario5Blue", scenarios[scenario5Order].blueVal);
+      console.log(amountReceived);
     formData.append("ScenarioSelected", selectedScenarioNum);
-    formData.append("AmountRecieved", amountRecieved);
+    formData.append("AmountReceived", amountReceived);
     formData.append("OriginalGift", originalGift);
     formData.append("Revise", edited);
-    formData.append("NewAnswer", newGift);
+    formData.append("NewAnswer", newAmount);
     formData.append("AmountPaid", amountPaid);
 
     // Send data to your Apps Script Web App URL
@@ -588,17 +589,23 @@ document.addEventListener("DOMContentLoaded", function () {
       //50/50 chance of red or blue
       color = Math.random() < 0.5 ? "red" : "blue";
     }
-    const amount = color === "red" ? 20 : 60; // Example amounts for each color
-    //save the moneyRecieved
-    amountRecieved = amount;
-    console.log(`amountRecieved: `+amountRecieved);
+
+    //write the original gift
+    if(outcome == "red"){
+      amountReceived = 20;
+      originalGift = scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal;
+    }
+    else{
+      amountReceived = 60;
+      originalGift = scenarios.find((scenario) => scenario.num === selectedScenarioNum).blueVal;
+    }
 
     const scenarioDescription = document.getElementById("scenarioDescription");
 
     if (group === "b") {
       scenarioDescription.innerHTML = `
             Wheel landed on: ${color.toUpperCase()}<br>
-            Here is what you receive from the spin: $${amount}<br>
+            Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $`;
       if (color == "red") {
         scenarioDescription.innerHTML += `${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}<br>`;
@@ -614,7 +621,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       scenarioDescription.innerHTML = `
             Wheel landed on: ${color.toUpperCase()}<br>
-            Here is what you receive from the spin: $${amount}<br>
+            Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $${
               scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal
               //TODO: add if statement for blue value
@@ -638,7 +645,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateDonation(color) {
-    const newAmount = document.getElementById("newDonationAmount").value;
+    newAmount = document.getElementById("newDonationAmount").value;
+    amountPaid = amountReceived-newAmount;
     console.log(`New donation amount: $${newAmount}`);
     if (color == "red") {
         if (scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal != newAmount) {
@@ -691,7 +699,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("submitModal").style.display = "block";
     const selectedScenario = selectRandomScenario();
     displayOutcome(selectedScenario);
-
     // Additional logic to process submission
   }
   //set initial instruction to display

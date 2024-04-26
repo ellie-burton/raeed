@@ -579,7 +579,10 @@ document.addEventListener("DOMContentLoaded", function () {
         alert(
           `Thank you for completing the study! Please show this screen to the experiment administrator in order to recieve your payout of $${amountPaid}. `
         );
+        window.location.reload();
+
       })
+      
       .catch((error) => console.error("Error:", error));
   }
 
@@ -590,18 +593,17 @@ document.addEventListener("DOMContentLoaded", function () {
     return scenarios.find((scenario) => scenario.num === randomNumber);
   }
 
-  function displayResult(outcome,certainty) {
+  function displayResult(color,certainty) {
     // Hide the submit button
     document.getElementById("spinBtn").style.display = "none";
 
     // Assuming the 'outcome' variable contains only the color 'red' or 'blue'.
-    let color = outcome; // 'outcome' should be 'red' or 'blue'
     if (color != "red" && color != "blue") {
       //50/50 chance of red or blue
       color = Math.random() < 0.5 ? "red" : "blue";
       //change slice on chart from gray to color
-      mainChart = document.getElementById("mainChart");
-      mainChart.data.datasets[0].backgroundColor[currentSlice] = color;
+      // mainChart = document.getElementById("mainChart");
+      // mainChart.data.datasets[0].backgroundColor[currentSlice] = color;
     }
 
     //write the original gift
@@ -619,11 +621,14 @@ document.addEventListener("DOMContentLoaded", function () {
       scenarioDescription.innerHTML += `Here is how much you decided to give: $${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}<br>`;
       const decisionInput = document.getElementById("decisionInput");
       decisionInput.innerHTML = `
-            <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
+            <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum? If not, click "finish."</p>
             <input type="number" id="newDonationAmount" value="${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}" />
         `;
     }
     else if (group === "b") {
+      if(outcome == 'unknown'){
+        outcome = Math.random() < 0.5 ? "red" : "blue";
+      }
       scenarioDescription.innerHTML += `
             Wheel landed on: ${outcome.toUpperCase()}<br>
             Here is what you receive from the spin: $${amountReceived}<br>
@@ -636,11 +641,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const decisionInput = document.getElementById("decisionInput");
       decisionInput.innerHTML = `
-            <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
+            <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum? If not, click "finish."</p>
             <input type="number" id="newDonationAmount" value="" />
         `;
         //group a
     } else {
+      if(outcome == 'unknown'){
+        outcome = Math.random() < 0.5 ? "red" : "blue";
+      }
       scenarioDescription.innerHTML += `
             Wheel landed on: ${outcome.toUpperCase()}<br>
             Here is what you receive from the spin: $${amountReceived}<br>
@@ -651,7 +659,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const decisionInput = document.getElementById("decisionInput");
       decisionInput.innerHTML = `
-            <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
+            <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum? If not, click "finish."</p>
             <input type="number" id="newDonationAmount" value="${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}" />
         `;
     }

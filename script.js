@@ -64,7 +64,7 @@ const instructions = [
   },
   {
     step: 2,
-    text: "The timeline of this study will be the following: <ol><li>	First choose a charity from a list that will be the recipient of all your donation decisions. <u>Remember: all the donation decisions you make will be directed to the charity you choose.</u> </li><li>Answer a series of six distinct and independent decisions with real stakes. In each decision, you will be described how the sum of money that you can allocate between yourself and the selected charity will be determined by a random spin of a wheel.  The wheels used in each decision are unique and unrelated to those used in the other decision rounds.  Your choice in each round is how you would like to split the sum of money between yourself and the selected charity.</li><li>The computer will select one of the six decisions at random.  Your choice in the selected decision will determine your earnings and the amount given to the charity.</li></ol>",
+    text: "The timeline of this study will be the following: <ol><li>	First choose a charity from a list that will be the recipient of all your donation decisions. <u>Remember: all the donation decisions you make will be directed to the charity you choose.</u> </li><li>Answer a series of six distinct and independent decisions with real stakes. In each decision,  bit will be explained how the sum of money that you can allocate between yourself and the selected charity will be determined by a random spin of a wheel.  The wheels used in each decision are unique and unrelated to those used in the other decision rounds.  Your choice in each round is how you would like to split the sum of money between yourself and the selected charity.</li><li>The computer will select one of the six decisions at random.  Your choice in the selected decision will determine your earnings and the amount given to the charity.</li></ol>",
   },
   {
     step: 3,
@@ -309,7 +309,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function generateNonStateContingentDescription(scenario) {
     return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
   }
-
+  
   function generateStateContingentDescription(scenario) {
     return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either red or blue. The number of red sections is between ${scenario.redMin} and ${scenario.redMax}. The rest are blue. Randomly landing on red yields $20, and randomly landing on blue yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
   }
@@ -595,7 +595,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("spinBtn").style.display = "none";
 
     // Assuming the 'outcome' variable contains only the color 'red' or 'blue'.
-    const color = outcome; // 'outcome' should be 'red' or 'blue'
+    let color = outcome; // 'outcome' should be 'red' or 'blue'
     if (color != "red" && color != "blue") {
       //50/50 chance of red or blue
       color = Math.random() < 0.5 ? "red" : "blue";

@@ -628,7 +628,6 @@ document.addEventListener("DOMContentLoaded", function () {
             Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $${
               scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal
-              //TODO: add if statement for blue value
             }
         `;
 
@@ -636,7 +635,6 @@ document.addEventListener("DOMContentLoaded", function () {
       decisionInput.innerHTML = `
             <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
             <input type="number" id="newDonationAmount" value="${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}" />
-            //TODO: add if statement for blue value
         `;
     }
 

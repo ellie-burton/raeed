@@ -132,15 +132,15 @@ document.addEventListener("DOMContentLoaded", function () {
   var amountPaid = -1;
 
   function setupChart(scenario, chart) {
-    const ctx = document.getElementById(chart).getContext("2d");
+    const ctx = document.getElementById(chart).getContext('2d');
     if (!ctx) {
       console.error("Chart canvas not found!");
       return;
     }
-
+  
     const dataCounts = generateChartData(scenario);
     mainChart = new Chart(ctx, {
-      type: "pie",
+      type: 'pie',
       data: {
         labels: dataCounts.labels,
         datasets: [
@@ -153,18 +153,29 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       options: {
         animation: {
-          duration: 0,
-          onProgress: function (animation) {
-            const chartInstance = animation.chart;
-            const ctx = chartInstance.ctx;
+          duration: 0 // Ensures the chart does not animate
+        },
+        hover: {
+          mode: 'nearest',
+          intersect: true,
+          animationDuration: 0  // Disables animation on hover
+        },
+        tooltips: { enabled: false }, // Optionally disable tooltips
+        legend: { display: false }, // Optionally hide the legend
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          // Adding afterDraw event to draw question marks
+          afterDraw: function(chart) {
+            const ctx = chart.ctx;
             ctx.font = "24px Arial"; // Customize font size and style
             ctx.textAlign = "center";
             ctx.fillStyle = "white"; // Text color
-
-            chartInstance.data.datasets.forEach(function (dataset, i) {
-              const meta = chartInstance.getDatasetMeta(i);
+  
+            chart.data.datasets.forEach(function (dataset, i) {
+              const meta = chart.getDatasetMeta(i);
               meta.data.forEach(function (bar, index) {
-                const label = chartInstance.data.labels[index];
+                const label = chart.data.labels[index];
                 if (label.includes("Unknown")) {
                   // Only draw on 'Unknown' slices
                   const centerPoint = bar.tooltipPosition();
@@ -172,17 +183,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
               });
             });
-          },
-        },
-        tooltips: { enabled: false }, // Optionally disable tooltips
-        legend: { display: false }, // Optionally hide the legend
-        responsive: true,
-        maintainAspectRatio: true,
-      },
+          }
+        }
+      }
     });
-    originalBackgroundColors =
-      mainChart.data.datasets[0].backgroundColor.slice();
+    originalBackgroundColors = mainChart.data.datasets[0].backgroundColor.slice();
   }
+  
 
   Chart.defaults.global.tooltips.enabled = false;
   Chart.defaults.global.legend.display = false;
@@ -622,6 +629,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
             <input type="number" id="newDonationAmount" value="" />
         `;
+        //group a
     } else {
       scenarioDescription.innerHTML = `
             Wheel landed on: ${color.toUpperCase()}<br>
@@ -641,7 +649,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmButton = document.getElementById("confirmChange");
     // Make sure to pass the current scenario number and color to the update function
     confirmButton.addEventListener("click", function () {
-      updateDonation(color); //TODO: add if statement for blue value
+      updateDonation(color); 
       finalSubmit();
     });
   }

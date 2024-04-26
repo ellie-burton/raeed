@@ -590,7 +590,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return scenarios.find((scenario) => scenario.num === randomNumber);
   }
 
-  function displayResult(outcome) {
+  function displayResult(outcome,certainty) {
     // Hide the submit button
     document.getElementById("spinBtn").style.display = "none";
 
@@ -612,9 +612,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const scenarioDescription = document.getElementById("scenarioDescription");
-
-    if (group === "b") {
-      scenarioDescription.innerHTML = `
+    if(certainty == 'certain'){
+      scenarioDescription.innerHTML += `Here is how much you decided to give: $${scenarios.find((scenario) => scenario.num === selectedScenarioNum).redVal}<br>`;
+    }
+    else if (group === "b") {
+      scenarioDescription.innerHTML += `
             Wheel landed on: ${color.toUpperCase()}<br>
             Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $`;
@@ -631,7 +633,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
         //group a
     } else {
-      scenarioDescription.innerHTML = `
+      scenarioDescription.innerHTML += `
             Wheel landed on: ${color.toUpperCase()}<br>
             Here is what you receive from the spin: $${amountReceived}<br>
             Here is how much you decided to give: $${
@@ -690,11 +692,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (scenario.redMin == 10) {
         scenarioDescription.innerHTML = `Round # Selected: Scenario ${scenario.orderNum + 1}. This was a fixed scenario in which you recieve $20.<br>`;
         outcome = "red";
-        displayResult(outcome);
+        displayResult(outcome,'certain');
       } else if((scenario.redMin == 0 && scenario.redMax != 10)){
         scenarioDescription.innerHTML = `Round # Selected: Scenario ${scenario.orderNum + 1}. This was a fixed scenario in which you recieve $60.<br>`;
         outcome = "blue";
-        displayResult(outcome);
+        displayResult(outcome,'certain');
       }
       
     else {

@@ -88,7 +88,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var comprehensionCheck1 = 1;
   var comprehensionCheck2 = 1;
   var recipientCharity = "unknown";
-  var currentTreatmentType = group;
+  var edited = false;
+  var amountRecieved = -1;
+  var originalGift = -1;
+  var newGift = -1;
+  var amountPaid=-1;
 
 
 
@@ -164,10 +168,6 @@ document.addEventListener("DOMContentLoaded", function () {
         userInputs[currentStep] = document.getElementById(`input${currentStep}`).value;
     }
     else {
-        console.log("Current step: ", currentStep);
-        console.log("Current scenario: ", scenarios[currentStep]);
-        console.log("Current user inputs: ", userInputs);
-
         //deal with certainty scenario
         if(scenarios[currentStep].redMin == 10 || (scenarios[currentStep].redMin == 0 && scenarios[currentStep].redMax != 10)){  
             userInputs[currentStep] = {red: document.getElementById(`input${currentStep}`).value,
@@ -361,6 +361,16 @@ function updateInstructionText() {
         instructionModal.style.display = "none";
 
     }
+    //check charity selection
+    if(currentStep == 5){
+        var charityRadio = document.querySelector('input[name="charityRadioGroup"]:checked');
+        if(charityRadio){
+            recipientCharity = charityRadio.labels[0].innerText;
+        }else{
+            alert("Please select a charity before proceeding.");
+            return;
+        }
+    }
     if (validateAnswers()) {
       nextInstruction();
     } else {
@@ -464,39 +474,59 @@ function updateInstructionText() {
   }
 
   function finalSubmit() {
-    console.log("Entered final submit function");
+    var formData = new FormData();
+    formData.append('TimeReadingInstructions', totalTimeSpent);
+    formData.append('ComprehensionQ1', comprehensionCheck1);
+    formData.append('ComprehensionQ2', comprehensionCheck2);
+    formData.append('RecipientCharity', recipientCharity);
+    formData.append('Treatment', group);
+    formData.append('Scenario0Order', scenario0Order);
+    formData.append('Scenario1Order', scenario1Order);
+    formData.append('Scenario2Order', scenario2Order);
+    formData.append('Scenario3Order', scenario3Order);
+    formData.append('Scenario4Order', scenario4Order);
+    formData.append('Scenario5Order', scenario5Order);
+    if(group === "a"){
+      formData.append('Scenario1Red', userInputs[1]);
+      formData.append('Scenario2Red', userInputs[2]);
+      formData.append('Scenario3Red', userInputs[3]);
+      formData.append('Scenario4Red', userInputs[4]);
+      formData.append('Scenario5Red', userInputs[5]);
+    }else{
+      formData.append('Scenario0Red', userInputs[0].red||-1);
+      formData.append('Scenario0Blue', userInputs[0].blue||-1);
+    formData.append('Scenario1Red',userInputs[1].red||-1);
+    formData.append('Scenario1Blue',userInputs[1].blue||-1);
+    formData.append('Scenario2Red',userInputs[2].red||-1);
+    formData.append('Scenario2Blue',userInputs[2].blue||-1);
+    formData.append('Scenario3Red',userInputs[3].red||-1);
+    formData.append('Scenario3Blue',userInputs[3].blue||-1);
+    formData.append('Scenario4Red',userInputs[4].red||-1);
+    formData.append('Scenario4Blue',userInputs[4].blue||-1);
+    formData.append('Scenario5Red',userInputs[5].red||-1);
+    formData.append('Scenario5Blue',userInputs[5].blue||-1);
+    }
+    formData.append('ScenarioSelected', selectedScenarioNum);
+    formData.append('AmountRecieved', amountRecieved); 
+    formData.append('OriginalGift', originalGift);
+    formData.append('Revise', edited);
+    formData.append('NewAnswer', newGift);
+    formData.append('AmountPaid', amountPaid);
 
-      console.log("Submission Data:", userInputs);
-      
-      // Prepare data object
-      var formData = {
-          TimeReadingInstructions: totalTimeSpent, // Implement this function based on your timer logic
-          ComprehensionQ1: comprehensionCheck1, // These should pull the current value from your input mechanism
-          ComprehensionQ2: comprehensionCheck2,
-          RecipientCharity: recipientCharity, // Ensure you have a function or way to get the chosen charity
-          Treatment: group // Determine how you get this information based on your scenarios
-      };
-  
-      // Send data to your Apps Script Web App URL
-      fetch('https://script.google.com/macros/s/AKfycbwLDvq61wiri1VkGtov0a7y-Ft2TUHR1MBIwanRaBdcx0NyWWHIkaz1VGtihsxKKjJ-/exec', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-      })
-      .then(response => response.text())
-      .then(data => {
-          console.log('Success:', data);
-          alert('Submission successful!');
-      })
-      .catch(error => console.error('Error:', error));
-  
-      
-//     setTimeout(() => {
-//         window.location.reload()
-//         }, 10000);
-  }
+    // Send data to your Apps Script Web App URL
+    let url = 'https://script.google.com/macros/s/AKfycbwL9lZHsmWympt7wCWRBq6sxRWw_b-SlDNyOpPwIkX9S3QgFPbzR5SSyCbtDMExBmHI/exec';
+    fetch(url, {
+        method: 'POST',
+        mode: 'no-cors', // Note: 'no-cors' mode means you won't be able to read the response
+        body: new URLSearchParams(formData)
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Success:', data);
+        alert('Submission successful!');
+    })
+    .catch(error => console.error('Error:', error));
+}
 
   let selectedScenarioNum = -1;
   function selectRandomScenario() {
@@ -506,7 +536,7 @@ function updateInstructionText() {
   }
 
   function displayResult(outcome) {
-    console.log("Entered display result function");
+
     // Hide the submit button
     document.getElementById("spinBtn").style.display = "none";
 
@@ -517,20 +547,26 @@ function updateInstructionText() {
       color = Math.random() < 0.5 ? "red" : "blue";
     }
     const amount = color === "red" ? 20 : 60; // Example amounts for each color
+    //save the moneyRecieved
+    amountRecieved = amount;
 
     const scenarioDescription = document.getElementById("scenarioDescription");
-    //
 
     if (group === "b") {
       scenarioDescription.innerHTML = `
             Wheel landed on: ${color.toUpperCase()}<br>
             Here is what you receive from the spin: $${amount}<br>
-            Here is how much you decided to give: $${userInputs[selectedScenarioNum][color]}`;
+            Here is how much you decided to give: $`;
+      if (color =='red'){
+        scenarioDescription.innerHTML += `${userInputs[selectedScenarioNum].red}<br>`;
+      } else {
+        scenarioDescription.innerHTML += `${userInputs[selectedScenarioNum].blue}<br>`;
+      }
 
       const decisionInput = document.getElementById("decisionInput");
       decisionInput.innerHTML = `
             <p>Would you like to change your decision? If yes, how much would you like to give to charity out of the sum?</p>
-            <input type="number" id="newDonationAmount" value="${userInputs[selectedScenarioNum][color]}" />
+            <input type="number" id="newDonationAmount" value="" />
         `;
     } else {
       scenarioDescription.innerHTML = `
@@ -557,8 +593,33 @@ function updateInstructionText() {
 }
 
   function updateDonation(scenarioNum, color) {
-    console.log("Entered update donation function");
     const newAmount = document.getElementById("newDonationAmount").value;
+
+    if (group === "a") {
+      if (userInputs[scenarioNum] != newAmount ){
+        edited = true;
+      }
+      userInputs[scenarioNum] = newAmount;
+    }
+    else{
+      if (color == "red" ){
+        if (userInputs[scenarioNum].red != newAmount ){
+            edited = true;
+            userInputs[scenarioNum].red = newAmount;
+          }
+        
+    }
+    if (color == "blue" ){
+      if (userInputs[scenarioNum].blue != newAmount ){
+          edited = true;
+          userInputs[scenarioNum].blue = newAmount;
+
+        }
+  }
+  }
+
+    //check if user updated amount
+
     console.log(
       `Updated donation for scenario #${scenarioNum} and color ${color}: $${newAmount}`
     );

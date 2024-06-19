@@ -1,3 +1,17 @@
+const colorDict = [
+    { cssColor: "ForestGreen", color: "Green", lightenColor: "DarkSeaGreen" },
+    { cssColor: "Indigo", color: "Purple", lightenColor: "DarkViolet" },
+    { cssColor: "LightSeaGreen", color: "Teal", lightenColor: "LightCyan" },
+    { cssColor: "LightCoral", color: "Pink", lightenColor: "LightPink" },
+    { cssColor: "Maroon", color: "Red", lightenColor: "FireBrick" },
+    { cssColor: "RoyalBlue", color: "Blue", lightenColor: "CornflowerBlue" },
+    { cssColor: "Chocolate", color: "Orange", lightenColor: "LightSalmon" },
+    { cssColor: "Orange", color: "Yellow", lightenColor: "Gold" },
+    { cssColor: "Purple", color: "Magenta", lightenColor: "MediumVioletRed" },
+    { cssColor: "SaddleBrown", color: "Brown", lightenColor: "RosyBrown" },
+    { cssColor: "Gray", color: "Gray", lightenColor: "DarkGray" }
+];
+
 document.addEventListener("DOMContentLoaded", function () {
     // Variables and initialization
     const instructionModal = document.getElementById("instructionModal");
@@ -44,26 +58,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function getScenarios() {
         return [
-            { num: 0, orderNum: -1, primaryMin: 0, primaryMax: 10, primaryVal: -1, secondaryVal: -1 ,primaryColor: null, secondaryColor: null},
-            { num: 1, orderNum: -1, primaryMin: 2, primaryMax: 8, primaryVal: -1, secondaryVal: -1,primaryColor: null, secondaryColor: null },
-            { num: 2, orderNum: -1, primaryMin: 4, primaryMax: 6, primaryVal: -1, secondaryVal: -1 ,primaryColor: null, secondaryColor: null},
-            { num: 3, orderNum: -1, primaryMin: 5, primaryMax: 5, primaryVal: -1, secondaryVal: -1 ,primaryColor: null, secondaryColor: null},
-            { num: 4, orderNum: -1, primaryMin: 10, primaryMax: 10, primaryVal: -1, secondaryVal: -1 ,primaryColor: null, secondaryColor: null},
-            { num: 5, orderNum: -1, primaryMin: 0, primaryMax: 0, primaryVal: -1, secondaryVal: -1 ,primaryColor: null, secondaryColor: null},
+            { num: 0, orderNum: -1, primaryMin: 0, primaryMax: 10, primaryVal: -1, secondaryVal: -1 ,primaryColor: "Gray", secondaryColor: "Gray"},
+            { num: 1, orderNum: -1, primaryMin: 2, primaryMax: 8, primaryVal: -1, secondaryVal: -1,primaryColor: "Gray", secondaryColor: "Gray" },
+            { num: 2, orderNum: -1, primaryMin: 4, primaryMax: 6, primaryVal: -1, secondaryVal: -1 ,primaryColor: "Gray", secondaryColor: "Gray"},
+            { num: 3, orderNum: -1, primaryMin: 5, primaryMax: 5, primaryVal: -1, secondaryVal: -1 ,primaryColor: "Gray", secondaryColor: "Gray"},
+            { num: 4, orderNum: -1, primaryMin: 10, primaryMax: 10, primaryVal: -1, secondaryVal: -1 ,primaryColor: "Gray", secondaryColor: "Gray"},
+            { num: 5, orderNum: -1, primaryMin: 0, primaryMax: 0, primaryVal: -1, secondaryVal: -1 ,primaryColor: "Gray", secondaryColor: "Gray"},
         ];
     }
+    
+    
 
     function randomizeColors() {
-        console.log("Entering randomizeColors function");
-        const colors = ["red", "blue", "darkgreen", "yellow", "orange", "indigo", "saddlebrown", "hotpink", "black", "teal", "magenta", "lime"];
-        console.log("Generated array of colors: " + JSON.stringify(colors));
+        var colors = [];
+        for (var i=0; i<colorDict.length; i++) {
+            if (colorDict[i].color == "Gray") continue;
+            colors.push(colorDict[i].color);
+        }
         for (var i = colors.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
             var temp = colors[i];
             colors[i] = colors[j];
             colors[j] = temp;
         }
-        console.log("Shuffled array of colors: " + JSON.stringify(colors));
+        console.log("Randomized colors: " + colors);
         return colors;
     }
 
@@ -90,10 +108,17 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let j=0;
     for (let i = 0; i < scenarios.length; i++) {
-        scenarios[i].primaryColor = colors[j];
-        scenarios[i].secondaryColor = colors[j+1];
-        j+=2;
+        if(scenarios[i].primaryMin == 10){
+            continue;
+        }
+        else{
+            scenarios[i].primaryColor = colors[j];
+            scenarios[i].secondaryColor = colors[j+1];
+            j+=2;
+        }
     }
+    console.log(scenarios);
+
     }
 
     function getInstructions() {
@@ -274,16 +299,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function moveToNextScenario() {
         console.log("Entering moveToNextScenario with scenarioNum:", scenarioNum);
-        if (scenarioNum+1 < scenarios.length) {
+        if (scenarioNum < scenarios.length - 1) {
             console.log("Incrementing scenarioNum");
             scenarioNum++;
+            console.log("Incremented scenarioNum to:", scenarioNum);
             console.log("Highlighting current scenario");
             highlightCurrentScenario(scenarioNum);
             console.log("Showing scenario with index:", scenarioNum);
             showScenario(scenarios[scenarioNum], scenarioNum, group === "b");
             console.log("Scrolling to top of page");
             window.scrollTo(0, 0);
+            console.log("Finished showing scenario with index:", scenarioNum);
         } else {
+            console.log("scenarioNum is equal to scenarios.length - 1");
+            alert("Now randomly selecting a scenario to run.");
             window.scrollTo(0, 0);
             console.log("Hiding next scenario button");
             document.getElementById("nextScenarioBtn").style.display = "none";
@@ -297,20 +326,24 @@ document.addEventListener("DOMContentLoaded", function () {
     highlightCurrentScenario(0);
 
     function showScenario(scenario, index, stateContingent) {
+        console.log("Entering showScenario with scenario:", scenario, "index:", index, "stateContingent:", stateContingent);
         const scenarioDiv = document.getElementById("scenario");
         const inputDiv = document.getElementById("user-input");
 
         if (scenario.primaryMin == 10 || (scenario.primaryMin == 0 && scenario.primaryMax != 10)) {
+            console.log("PrimaryMin is 10 or PrimaryMin is 0 and PrimaryMax is not 10");
             document.getElementById("scenarioChart").style.display = "none";
-            scenarioDiv.innerHTML = `<h2>Scenario ${index + 1}</h2><p>This scenario has a fixed outcome with no random elements.</p>`;
-            inputDiv.innerHTML = `<p>You have been given $${scenario.primaryMin === 10 ? 20 : 60}. You can split this sum between you and your chosen charity. If you decide to give $X to your chosen charity, then you will take $${scenario.primaryMin === 10 ? 20 : 60}-$X home. You cannot donate more than $${scenario.primaryMin === 10 ? 20 : 60}</p><p>How much would you like to pledge to share with your chosen charity?</p>
-                                <input type="number" class="form-control" placeholder="Enter your donation" value="${scenario.primaryVal === -1 ? "" : scenario.primaryVal}" id="input${index}">`;
+            scenarioDiv.innerHTML = `<h2>Scenario ${scenarioNum + 1}</h2><p>This scenario has a fixed outcome with no random elements.</p>`;
+            const donationAmount = scenario.primaryMin === 10 ? 20 : 60;
+            inputDiv.innerHTML = `<p>You have been given $${donationAmount}. You can split this sum between you and your chosen charity. If you decide to give $X to your chosen charity, then you will take $${donationAmount}-$X home. You cannot donate more than $${donationAmount}</p><p>How much would you like to pledge to share with your chosen charity?</p>
+                                <input type="number" class="form-control" placeholder="Enter your donation" value="${scenario.primaryVal === -1 ? "" : scenario.primaryVal}" id="input${scenarioNum}">`;
         } else {
+            console.log("PrimaryMin is not 10 and PrimaryMax is not 10");
             document.getElementById("scenarioChart").style.display = "block";
             setupChart(scenario, "scenarioChart");
             const scenarioDescription = stateContingent ? generateStateContingentDescription(scenario) : generateNonStateContingentDescription(scenario);
-            scenarioDiv.innerHTML = `<h2>Scenario ${index + 1}</h2><p>${scenarioDescription}</p>`;
-            inputDiv.innerHTML = stateContingent ? generateStateInputs(index) : generateNonStateInputs(index);
+            scenarioDiv.innerHTML = `<h2>Scenario ${scenarioNum + 1}</h2><p>${scenarioDescription}</p>`;
+            inputDiv.innerHTML = stateContingent ? generateStateInputs() : generateNonStateInputs();
         }
     }
 
@@ -324,15 +357,15 @@ document.addEventListener("DOMContentLoaded", function () {
         return `The money you receive will be determined by a spin of a wheel. The wheel consists of ten sections of equal size that are either ${scenarios[scenarioNum].primaryColor} or ${scenarios[scenarioNum].secondaryColor}. The number of ${scenarios[scenarioNum].primaryColor} sections is between ${scenarios[scenarioNum].primaryMin} and ${scenarios[scenarioNum].primaryMax}. The rest are ${scenarios[scenarioNum].secondaryColor}. Randomly landing on ${scenarios[scenarioNum].primaryColor} yields $20, and randomly landing on ${scenarios[scenarioNum].secondaryColor} yields $60. You will first make the decision on how much you will give, and then the computer will randomly spin the wheel.`;
     }
 
-    function generateStateInputs(index) {
+    function generateStateInputs() {
         return `<p>Select donation amounts based on color outcomes...</p>
-                <input type="number" class="form-control" placeholder="Amount if ${scenarios[index].primaryColor} (up to $20)" value="${scenarios[index].primaryVal === -1 ? "" : scenarios[index].primaryVal}" id="primaryInput${index}">
-                <input type="number" class="form-control" placeholder="Amount if ${scenarios[index].secondaryColor} (up to $60)" value="${scenarios[index].secondaryVal === -1 ? "" : scenarios[index].secondaryVal}" id="secondaryInput${index}">`;
+                <input type="number" class="form-control" placeholder="Amount if ${scenarios[scenarioNum].primaryColor} (up to $20)" value="${scenarios[scenarioNum].primaryVal === -1 ? "" : scenarios[scenarioNum].primaryVal}" id="primaryInput${scenarioNum}">
+                <input type="number" class="form-control" placeholder="Amount if ${scenarios[scenarioNum].secondaryColor} (up to $60)" value="${scenarios[scenarioNum].secondaryVal === -1 ? "" : scenarios[scenarioNum].secondaryVal}" id="secondaryInput${scenarioNum}">`;
     }
 
-    function generateNonStateInputs(index) {
+    function generateNonStateInputs() {
         return `<p>Enter donation amount (up to $20)</p>
-                <input type="number" class="form-control" placeholder="Enter donation amount" value="${scenarios[index].primaryVal === -1 ? "" : scenarios[index].primaryVal}" id="input${index}">`;
+                <input type="number" class="form-control" placeholder="Enter donation amount" value="${scenarios[scenarioNum].primaryVal === -1 ? "" : scenarios[scenarioNum].primaryVal}" id="input${scenarioNum}">`;
     }
 
     function updateUserInputs() {
@@ -414,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 tooltips: { enabled: false },
                 legend: { display: false },
-                responsive: true,
+                responsive: false,
                 maintainAspectRatio: true,
                 plugins: {
                     afterDraw: function (chart) {
@@ -441,6 +474,7 @@ document.addEventListener("DOMContentLoaded", function () {
         originalBackgroundColors = mainChart.data.datasets[0].backgroundColor.slice();
     }
     
+    
     function generateChartData(scenario) {
         console.log("Generating chart data...");
         console.log("Scenario:", scenario);
@@ -450,6 +484,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const unknownCount = 10 - primaryCount - secondaryCount;
         let primaryColor = scenario.primaryColor;
         let secondaryColor = scenario.secondaryColor;
+        // use colorsDict to get css color
+        var primaryCSS = colorDict.find((color) => color.color == primaryColor).cssColor;
+        var secondaryCSS = colorDict.find((color) => color.color == secondaryColor).cssColor;
+
         const xValues = [];
         const yValues = [];
         const barColors = [];
@@ -461,12 +499,12 @@ document.addEventListener("DOMContentLoaded", function () {
         for (let i = 0; i < primaryCount; i++) {
             xValues.push(primaryColor);
             yValues.push(1);
-            barColors.push(primaryColor);
+            barColors.push(primaryCSS);
         }
         for (let i = 0; i < secondaryCount; i++) {
             xValues.push(secondaryColor);
             yValues.push(1);
-            barColors.push(secondaryColor);
+            barColors.push(secondaryCSS);
         }
         for (let i = 0; i < unknownCount; i++) {
             xValues.push("Unknown");
@@ -485,43 +523,12 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
     
-    function colorNameToRgba(colorName) {
-        const tempElem = document.createElement("div");
-        tempElem.style.color = colorName;
-        document.body.appendChild(tempElem);
-    
-        const color = window.getComputedStyle(tempElem).color;
-        console.log("Color:", color);
-        document.body.removeChild(tempElem);
-        return color;
-    }
-
-    // function lightenColor(color) {
-    //     let rgbaColor = colorNameToRgba(color);
-    //     rgbaColor = { r: (1.2*rgbaColor.r), g: (1.03*rgbaColor.g), b: (1.01*rgbaColor.b), a: rgbaColor.a };
-    //     return `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, ${rgbaColor.a})`;
-    // }
     function lightenColor(color) {
-        let rgbaColor = colorNameToRgba(color);
-        r = rgbaColor.r;
-        g = rgbaColor.g;
-        b = rgbaColor.b;
-        const threshold = 255.999;
-        const m = Math.max(r, g, b);
-        if (m <= threshold) {
-            return [Math.floor(r), Math.floor(g), Math.floor(b)];
+        if(color == "gray") {
+            return "lightgray";
         }
-        const total = r + g + b;
-        if (total >= 3 * threshold) {
-            return [Math.floor(threshold), Math.floor(threshold), Math.floor(threshold)];
-        }
-        const x = (3 * threshold - total) / (3 * m - total);
-        const gray = threshold - x * m;
-        let newR = Math.floor(gray + x * r);
-        let newG = Math.floor(gray + x * g);
-        let newB = Math.floor(gray + x * b);
-        return `rgb(${newR}, ${newG}, ${newB})`;
-
+        let lightenedColor= colorDict[color.toLowerCase()].lightenColor;
+        return lightenedColor;
     }
     
 

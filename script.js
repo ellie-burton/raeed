@@ -524,10 +524,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     function lightenColor(color) {
+        console.log(`lightenColor function called with color: ${color}`);
         if(color == "gray") {
+            console.log(`Color is gray. Returning lightgray`);
             return "lightgray";
         }
-        let lightenedColor= colorDict[color.toLowerCase()].lightenColor;
+        let lightenedColor = colorDict.find((col) => {
+            console.log(`Checking if ${col.cssColor} matches ${color}`);
+            return col.cssColor == color;
+        }).lightenColor;
+        console.log(`Returning lightened color: ${lightenedColor}`);
         return lightenedColor;
     }
     
@@ -648,10 +654,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     function revealColors(scenario) {
+        primary = scenario.primaryColor;
+        secondary = scenario.secondaryColor;
+
+        primaryCSS = colorDict.find((color) => color.color == primary).cssColor;
+        secondaryCSS = colorDict.find((color) => color.color == secondary).cssColor;
+
         setTimeout(() => {
             mainChart.data.datasets[0].backgroundColor = mainChart.data.datasets[0].backgroundColor.map(color => {
                 if (color === 'gray') {
-                    return Math.random() < 0.5 ? colorNameToRgba(scenario.primaryColor) : colorNameToRgba(scenario.secondaryColor);
+                    return Math.random() < 0.5 ? primaryCSS : secondaryCSS;
                 }
                 return color;
             });

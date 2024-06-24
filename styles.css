@@ -157,6 +157,8 @@ body {
     cursor: pointer; /* Cursor on hover */
   }
 
+  
+
   .scenario-box {
     /*round edges*/
     border-radius: 10px;

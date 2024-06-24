@@ -37,6 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let amountPaid = -1;
     let selectedScenarioNum = -1;
     let review = false;
+    let userName = "";
+    let userCWID = "";
 
     // Shuffle scenarios
     shuffleScenarios(scenarios);
@@ -125,23 +127,36 @@ document.addEventListener("DOMContentLoaded", function () {
         return [
         {
           step: 0,
-          text: "Thank you for participating in this research study. The entire study will be completed on the computer in one sitting.",
+          text: `Thank you for participating in this research study. The entire study will be completed on the computer in one sitting. First please enter your name and CWID. <form id="loginForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="cwid" class="form-label">CWID</label>
+                <input type="text" class="form-control" id="cwid" required>
+            </div>`,
+            review: false,
         },
         {
           step: 1,
           text: "You will answer a series of questions. In each round, you will be asked to make a charitable contribution to a charity of your choosing out of a sum of money you receive for that round. You can split the sum of money between yourself and the charity however you want. You can even give all of it or keep all of it.",
+          review: true,
         },
         {
           step: 2,
           text: "The timeline of this study will be the following: <ol><li>	First choose a charity from a list that will be the recipient of all your donation decisions. <u>Remember: all the donation decisions you make will be directed to the charity you choose.</u> </li><li>Answer a series of six distinct and independent decisions with real stakes. In each decision,  bit will be explained how the sum of money that you can allocate between yourself and the selected charity will be determined by a random spin of a wheel.  The wheels used in each decision are unique and unrelated to those used in the other decision rounds.  Your choice in each round is how you would like to split the sum of money between yourself and the selected charity.</li><li>The computer will select one of the six decisions at random.  Your choice in the selected decision will determine your earnings and the amount given to the charity.</li></ol>",
+          review: true,
         },
         {
           step: 3,
           text: "Before we begin this study, we would like to check your understanding. </p><p> Q1: How many different allocation decisions will you make?  <div class='form-check'><input class='form-check-input' type='radio' name='q3Input' id='q1Input1'><label class='form-check-label' for='q1Input1'>4</label></div><div class='form-check'><input class='form-check-input' type='radio' name='q3Input' id='q1Input2'><label class='form-check-label' for='q1Input2'>5</label></div><div class='form-check'><input class='form-check-input' type='radio' name='q3Input' id='q1Input3'><label class='form-check-label' for='q1Input3'>6</label></div><div class='form-check'><input class='form-check-input' type='radio' name='q3Input' id='q1Input4'><label class='form-check-label' for='q1Input4'>7</label></div><div class='form-check'><input class='form-check-input' type='radio' name='q3Input' id='q1Input5'><label class='form-check-label' for='q1Input5'>8</label></div><div class='form-check'><input class='form-check-input' type='radio' name='q3Input' id='q1Input6'><label class='form-check-label' for='q1Input6'>9</label></div></p>",
+          review: false,
         },
         {
           step: 4,
           text: "Before we begin this study, we would like to check your understanding. <p>Q2: Recall that your decisions will determine your payment. How is your payment determined? <div class='form-check'><input class='form-check-input' type='radio' name='q4Input' id='q2Input1'><label class='form-check-label' for='q2Input1'>Every decision in the six parts will get paid. Thus, I can strategize across decisions and hedge my bets.</label></div><div class='form-check'><input class='form-check-input' type='radio' name='q4Input' id='q2Input2'><label class='form-check-label' for='q2Input2'>The computer will randomly select one of the decisions in the six parts, and my payment will depend on my answer to this question. Thus, there is no point for me to strategize across these decisions.</label></div></p>",
+          review: false,
         },
         {
           step: 5,
@@ -150,6 +165,8 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio3'><label class='form-check-label' for='charityRadio3'> <b>RISE Center: </b>Description from their <a href='https://risecenter.ua.edu/' target='_blank'>website</a>: “The YMCA of Tuscaloosa embraces people of all ages, incomes, abilities, religions and ethnic backgrounds; we're for everyone. We work to break barriers of isolation and create the connections between people that add meaning to life. Individuals and families who cannot afford to pay full price for memberships or our programs still deserve the life-enriching experiences the Y offers. At the Y, we never turn anyone away because of an inability to pay.”</label></div>
           <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio4'><label class='form-check-label' for='charityRadio4'><b> Tuscaloosa Metro Animal Shelter: </b>Description from their <a href='https://give.metroanimalshelter.org/give/296293/#!/donation/checkout' target='_blank'>website</a>: "Tuscaloosa Metro Animal Shelter is the only stray receiving facility for Tuscaloosa County, Tuscaloosa City, and the City of Northport. All animals picked up by the three municipal animal control agencies in Tuscaloosa County are brought to TMAS… Every year we get in thousands of lost and abandoned pets into our facility.  Donations from our amazing supporters allow us to treat, rehabilitate, foster, and adopt them out!"</label></div>",
         `
+        ,
+        review: false,
         }
         ];}
 
@@ -161,16 +178,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showInstructions() {
-        instructionDiv.innerHTML = `<p>${instructions[0].text}</p>`;
+        if(review){
+            instructionDiv.innerHTML = `<p>${instructions[1].text}</p>`;
+        }
+        else {
+            instructionDiv.innerHTML = `<p>${instructions[0].text}</p>`;
+        }
     }
 
+
     function handleContinueClick() {
+        if (review){
+            if (instructions[currentStep].review == false){
+                return;
+            }
+        }
         if (currentStep == 5) {
             const charityRadio = document.querySelector('input[name="charityRadioGroup"]:checked');
             if (charityRadio) {
                 recipientCharity = charityRadio.labels[0].innerText;
             } else {
                 alert("Please select a charity before proceeding.");
+                return;
+            }
+        }
+        if (currentStep == 0){
+            userName = document.getElementById("name").value;
+            userCWID = document.getElementById("cwid").value;
+            if (userName && userCWID) {
+                if (userCWID.length != 8) {
+                    alert("Please enter a valid CWID.");
+                    return;
+                }
+
+            } else {
+                alert("Please enter your name and CWID before proceeding.");
                 return;
             }
         }
@@ -184,9 +226,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             alert("Please answer the question correctly before proceeding.");
         }
-        if (!review && currentStep >= instructions.length) {
-            totalTimeSpent = new Date() - startTime;
-        }
     }
 
     function handleBackClick() {
@@ -198,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleViewInstructionsClick() {
         review = true;
-        currentStep = 0;
+        currentStep = 1;
         instructionModal.style.display = "block";
         viewInstructionsBtn.style.display = "none";
         updateInstructionText();
@@ -237,8 +276,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateInstructionText() {
-        if (instructions[currentStep]) {
-            instructionDiv.innerHTML = `<p>${instructions[currentStep].text}</p>`;
+        if(review){
+            if (instructions[currentStep] && instructions[currentStep].review == true) {
+                instructionDiv.innerHTML = `<p>${instructions[currentStep].text}</p>`;
+            }   
+        }
+        else{
+            if (instructions[currentStep]) {
+                instructionDiv.innerHTML = `<p>${instructions[currentStep].text}</p>`;
+            }
         }
     }
 
@@ -246,6 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const scenarioNumbersDiv = document.getElementById("scenarioNumbers");
         for (let i = 0; i < totalScenarios; i++) {
             const box = document.createElement("div");
+            //set style on div to shift right
             box.className = "scenario-box";
             box.innerText = i + 1;
             scenarioNumbersDiv.appendChild(box);

@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let review = false;
     let userName = "";
     let userCWID = "";
+    let id = "";
 
     // Shuffle scenarios
     shuffleScenarios(scenarios);
@@ -121,6 +122,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     console.log(scenarios);
 
+    }
+
+    function generateCode(input) {
+        let hash = 0;
+        for (let i = 0; i < input.length; i++) {
+            const char = input.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash.toString(16); // Convert to hexadecimal
     }
 
     function getInstructions() {
@@ -215,6 +226,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Please enter your name and CWID before proceeding.");
                 return;
             }
+            id = generateCode(userName, userCWID);
+
         }
         if (validateAnswers()) {
             nextInstruction();
@@ -780,7 +793,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function finalSubmit() {
         const formData = new FormData();
-        formData.append("TimeReadingInstructions", totalTimeSpent);
+        formData.append("Subject ID", id);
         formData.append("ComprehensionQ1", comprehensionCheck1);
         formData.append("ComprehensionQ2", comprehensionCheck2);
         formData.append("RecipientCharity", recipientCharity);
@@ -825,5 +838,4 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Error:", error));
     }
 
-    const startTime = new Date();
 });

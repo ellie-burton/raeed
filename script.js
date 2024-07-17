@@ -11,6 +11,12 @@ const colorDict = [
     { cssColor: "SaddleBrown", color: "Brown", lightenColor: "RosyBrown" },
     { cssColor: "Gray", color: "Gray", lightenColor: "DarkGray" }
 ];
+const charityDict = [
+    { name: "Tuscaloosa Public Library", website:"https://www.tuscaloosa-library.org/support-the-library/", description: "The Tuscaloosa Public Library is the City’s and County’s public library for all residents to utilize for their educational, workforce, research and entertainment needs. TPL has been serving this community for more than 100 years and looks to continue that role for the next 100 years. Your gift to the Tuscaloosa Public Library will help maintain the quality of the Library’s collections, diverse programming, informational resources and accessible to technology." },
+    {name: "Tuscaloosa YMCA", website: "https://www.ymcatuscaloosa.org/financial", description: "The YMCA of Tuscaloosa embraces people of all ages, incomes, abilities, religions and ethnic backgrounds; we're for everyone. We work to break barriers of isolation and create the connections between people that add meaning to life. Individuals and families who cannot afford to pay full price for memberships or our programs still deserve the life-enriching experiences the Y offers. At the Y, we never turn anyone away because of an inability to pay." },
+    {name:"RISE Center at UA", website: "https://risecenter.ua.edu/",description: "RISE was started in 1974 to enrich the lives of infants and preschoolers – both traditional learners and children with varying abilities.  Through early intervention and early childhood preschool services, children at RISE are equipped with the skills necessary to succeed in an inclusive school setting.  Children at RISE receive music therapy, physical therapy, occupational therapy and speech and language therapy in a classroom setting.  Our team of nurses provide medical services to children in need throughout the day.  The program includes seven classrooms led by highly qualified early childhood education teachers that embed individual therapy goals into daily developmentally appropriate activities.  RISE is housed in a state-of-the-art early childhood education facility on the campus of The University of Alabama that is unparalleled in design and accommodations to meet the needs of all children.  RISE is a part of the College of Human Environmental Sciences and provides opportunities for University students to experience evidence-based research practices in the field of early childhood education and early childhood special education.  RISE Center currently serves close to 100 children and their families."},
+    {name:"Tuscaloosa Metro Animal Shelter",website:"https://give.metroanimalshelter.org/give/296293/#!/donation/checkout",description: "Tuscaloosa Metro Animal Shelter is the only stray receiving facility for Tuscaloosa County, Tuscaloosa City, and the City of Northport. All animals picked up by the three municipal animal control agencies in Tuscaloosa County are brought to TMAS… Every year we get in thousands of lost and abandoned pets into our facility.  Donations from our amazing supporters allow us to treat, rehabilitate, foster, and adopt them out!"}
+]
 
 document.addEventListener("DOMContentLoaded", function () {
     // Variables and initialization
@@ -40,6 +46,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let userName = "";
     let userCWID = "";
     let id = "";
+
+    let scenario0Order = -1;
+    let scenario1Order = -1;
+    let scenario2Order = -1;
+    let scenario3Order = -1;
+    let scenario4Order = -1;
+    let scenario5Order = -1;
 
     // Shuffle scenarios
     shuffleScenarios(scenarios);
@@ -89,38 +102,45 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function shuffleScenarios(scenarios) {
+        nums = [0, 1, 2, 3, 4, 5];
         for (let i = scenarios.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [scenarios[i], scenarios[j]] = [scenarios[j], scenarios[i]];
         }
-            
-    var scenario0Order = scenarios.findIndex((scenario) => scenario.num == 0);
-    scenarios.find((scenario) => scenario.num == 0).orderNum = scenario0Order;
-    var scenario1Order = scenarios.findIndex((scenario) => scenario.num == 1);
-    scenarios.find((scenario) => scenario.num == 1).orderNum = scenario1Order;
-    var scenario2Order = scenarios.findIndex((scenario) => scenario.num == 2);
-    scenarios.find((scenario) => scenario.num == 2).orderNum = scenario2Order;
-    var scenario3Order = scenarios.findIndex((scenario) => scenario.num == 3);
-    scenarios.find((scenario) => scenario.num == 3).orderNum = scenario3Order;
-    var scenario4Order = scenarios.findIndex((scenario) => scenario.num == 4);
-    scenarios.find((scenario) => scenario.num == 4).orderNum = scenario4Order;
-    var scenario5Order = scenarios.findIndex((scenario) => scenario.num == 5);
-    scenarios.find((scenario) => scenario.num == 5).orderNum = scenario5Order;
-    
-    var colors = randomizeColors();
-    
-    let j=0;
-    for (let i = 0; i < scenarios.length; i++) {
-        if(scenarios[i].primaryMin == 10){
-            continue;
+        
+        scenario0Order = scenarios.findIndex((scenario) => scenario.num == 0);
+        console.log("Scenario 0 order: " + scenario0Order);
+        scenarios.find((scenario) => scenario.num == 0).orderNum = scenario0Order;
+        scenario1Order = scenarios.findIndex((scenario) => scenario.num == 1);
+        console.log("Scenario 1 order: " + scenario1Order);
+        scenarios.find((scenario) => scenario.num == 1).orderNum = scenario1Order;
+        scenario2Order = scenarios.findIndex((scenario) => scenario.num == 2);
+        console.log("Scenario 2 order: " + scenario2Order);
+        scenarios.find((scenario) => scenario.num == 2).orderNum = scenario2Order;
+        scenario3Order = scenarios.findIndex((scenario) => scenario.num == 3);
+        console.log("Scenario 3 order: " + scenario3Order);
+        scenarios.find((scenario) => scenario.num == 3).orderNum = scenario3Order;
+        scenario4Order = scenarios.findIndex((scenario) => scenario.num == 4);
+        console.log("Scenario 4 order: " + scenario4Order);
+        scenarios.find((scenario) => scenario.num == 4).orderNum = scenario4Order;
+        scenario5Order = scenarios.findIndex((scenario) => scenario.num == 5);
+        console.log("Scenario 5 order: " + scenario5Order);
+        scenarios.find((scenario) => scenario.num == 5).orderNum = scenario5Order; 
+        
+        var colors = randomizeColors();
+        
+        let j=0;
+        for (let i = 0; i < scenarios.length; i++) {
+            if(scenarios[i].primaryMin == 10){
+                continue;
+            }
+            else{
+                scenarios[i].primaryColor = colors[j];
+                scenarios[i].secondaryColor = colors[j+1];
+                j+=2;
+            }
         }
-        else{
-            scenarios[i].primaryColor = colors[j];
-            scenarios[i].secondaryColor = colors[j+1];
-            j+=2;
-        }
-    }
-    console.log(scenarios);
+        console.log(scenarios);
 
     }
 
@@ -134,11 +154,18 @@ document.addEventListener("DOMContentLoaded", function () {
         return hash.toString(16); // Convert to hexadecimal
     }
 
+    function generateCharities() {
+        htmlText = "Choose a recipient for all your donations from the following list of charities: ";
+        for (let i = 0; i < charityDict.length; i++) {
+            htmlText += `<div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio${i + 1}'><label class='form-check-label' for='charityRadio${i + 1}'><b>${charityDict[i].name}</b>: <a href = '${charityDict[i].website}' target='_blank'>Website</a> ${charityDict[i].description}</label></div>`;
+        }
+        return htmlText;
+    }
     function getInstructions() {
         return [
         {
           step: 0,
-          text: `Thank you for participating in this research study. The entire study will be completed on the computer in one sitting. First please enter your name and CWID. <form id="loginForm">
+          text: `Thank you for participating in this research study. The entire study will be completed on the computer in one sitting. First please enter your name, CWID, and Session ID. <form id="loginForm">
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" required>
@@ -146,17 +173,26 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="mb-3">
                 <label for="cwid" class="form-label">CWID</label>
                 <input type="text" class="form-control" id="cwid" required>
+            </div>
+            <div class="mb-3">
+                <label for="session-id" class="form-label">Session #</label>
+                <input type="text" class="form-control" id="session-id" required>
             </div>`,
             review: false,
         },
         {
-          step: 1,
-          text: "You will answer a series of questions. In each round, you will be asked to make a charitable contribution to a charity of your choosing out of a sum of money you receive for that round. You can split the sum of money between yourself and the charity however you want. You can even give all of it or keep all of it.",
+          step: 0,
+          text: "Thank you for participating in this research study. The entire study will be completed on the computer in one sitting. The study consists of two parts.",
           review: true,
         },
         {
+            step: 1,
+            text: "In this part, you will answer a series of questions. In each round, you will be asked to make a contribution to a charity of your choosing. The contribution will be deducted from a sum of money you receive for that round. You can split the sum of money between yourself and the charity however you want. You can even give all of it or keep all of it.",
+            review: true,
+        },
+        {
           step: 2,
-          text: "The timeline of this study will be the following: <ol><li>	First choose a charity from a list that will be the recipient of all your donation decisions. <u>Remember: all the donation decisions you make will be directed to the charity you choose.</u> </li><li>Answer a series of six distinct and independent decisions with real stakes. In each decision,  bit will be explained how the sum of money that you can allocate between yourself and the selected charity will be determined by a random spin of a wheel.  The wheels used in each decision are unique and unrelated to those used in the other decision rounds.  Your choice in each round is how you would like to split the sum of money between yourself and the selected charity.</li><li>The computer will select one of the six decisions at random.  Your choice in the selected decision will determine your earnings and the amount given to the charity.</li></ol>",
+          text: "The timeline of this study will be the following: <ol><li>First you will be given the opportunity to select a charity from a list of potential causes. The selected charity will be the recipient of your donation decision in all subsequent rounds. <u>Remember: all the donation decisions you make will be directed to the charity you choose.</u> </li><li>You will then answer a series of six distinct and independent decisions with real financial stakes. In each decision, it will be explained how the sum of money that you can allocate between yourself and the selected charity will be determined by a random spin of a wheel. The wheels used in each decision are unique and unrelated to those used in each and every other decision round. Your choice in each round is to determine how you would like to split the sum of money between yourself and the selected charity.</li><li>Once you have made an allocation in each of the rounds, the computer will select one of the six decision rounds at random. Your choice in the selected decision round will determine your earnings and the amount that will be given to the selected charity.</li></ol>",
           review: true,
         },
         {
@@ -171,12 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         {
           step: 5,
-          text: `Choose a recipient for all your donations from the following list of charities: <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio1'><label class='form-check-label' for='charityRadio1'><b> Tuscaloosa Public Library: </b>Description from their <a href = 'https://www.tuscaloosa-library.org/support-the-library/' target='_blank'>website</a>: “The Tuscaloosa Public Library is the City’s and County’s public library for all residents to utilize for their educational, workforce, research and entertainment needs. TPL has been serving this community for more than 100 years and looks to continue that role for the next 100 years. Your gift to the Tuscaloosa Public Library will help maintain the quality of the Library’s collections, diverse programming, informational resources and accessible to technology.”</label></div>
-          <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio2'><label class='form-check-label' for='charityRadio2'><b> Tuscaloosa YMCA: </b>Description from their <a href='https://www.ymcatuscaloosa.org/financial' target='_blank'>website</a>: “The YMCA of Tuscaloosa embraces people of all ages, incomes, abilities, religions and ethnic backgrounds; we're for everyone. We work to break barriers of isolation and create the connections between people that add meaning to life. Individuals and families who cannot afford to pay full price for memberships or our programs still deserve the life-enriching experiences the Y offers. At the Y, we never turn anyone away because of an inability to pay.”</label></div>
-          <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio3'><label class='form-check-label' for='charityRadio3'> <b>RISE Center: </b>Description from their <a href='https://risecenter.ua.edu/' target='_blank'>website</a>: “The YMCA of Tuscaloosa embraces people of all ages, incomes, abilities, religions and ethnic backgrounds; we're for everyone. We work to break barriers of isolation and create the connections between people that add meaning to life. Individuals and families who cannot afford to pay full price for memberships or our programs still deserve the life-enriching experiences the Y offers. At the Y, we never turn anyone away because of an inability to pay.”</label></div>
-          <div class='form-check'><input class='form-check-input' type='radio' name='charityRadioGroup' id='charityRadio4'><label class='form-check-label' for='charityRadio4'><b> Tuscaloosa Metro Animal Shelter: </b>Description from their <a href='https://give.metroanimalshelter.org/give/296293/#!/donation/checkout' target='_blank'>website</a>: "Tuscaloosa Metro Animal Shelter is the only stray receiving facility for Tuscaloosa County, Tuscaloosa City, and the City of Northport. All animals picked up by the three municipal animal control agencies in Tuscaloosa County are brought to TMAS… Every year we get in thousands of lost and abandoned pets into our facility.  Donations from our amazing supporters allow us to treat, rehabilitate, foster, and adopt them out!"</label></div>",
-        `
-        ,
+          text: generateCharities(),
         review: false,
         }
         ];}
@@ -500,11 +531,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 animation: {
                     duration: 0
                 },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true,
-                    animationDuration: 0
-                },
                 tooltips: { enabled: false },
                 legend: { display: false },
                 responsive: false,
@@ -657,7 +683,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (outcome == 'unknown') {
                 outcome = Math.random() < 0.5 ? "primary" : "secondary";
             }
-            console.log(`Wheel landed on: ${outcome.toUpperCase()}`);
+            console.log(`Wheel landed on: ${color == "primary" ? scenarios.find(scenario => scenario.num === selectedScenarioNum).primaryColor : scenarios.find(scenario => scenario.num === selectedScenarioNum).secondaryColor}`);
             console.log(`Here is what you receive from the spin: $${amountReceived}`);
             console.log(`Here is how much you decided to give: $${color == "primary" ? scenarios.find(scenario => scenario.num === selectedScenarioNum).primaryVal : scenarios.find(scenario => scenario.num === selectedScenarioNum).secondaryVal}`);
             scenarioDescription.innerHTML += `
@@ -719,12 +745,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         primaryCSS = colorDict.find((color) => color.color == primary).cssColor;
         secondaryCSS = colorDict.find((color) => color.color == secondary).cssColor;
-
+        let index = 0;
         setTimeout(() => {
             mainChart.data.datasets[0].backgroundColor = mainChart.data.datasets[0].backgroundColor.map(color => {
-                if (color === 'gray') {
-                    return Math.random() < 0.5 ? primaryCSS : secondaryCSS;
+                if (color === 'gray') {                    
+                    let newColor = Math.random() < 0.5 ? primaryCSS : secondaryCSS;
+                    //store in originalBackgroundColors
+                    originalBackgroundColors[index] = newColor;
+                    index++;
+                    return newColor;
                 }
+                index++;
                 return color;
             });
             mainChart.update();
@@ -798,24 +829,24 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("ComprehensionQ2", comprehensionCheck2);
         formData.append("RecipientCharity", recipientCharity);
         formData.append("Treatment", group);
-        formData.append("Scenario0Order", scenarios[0].orderNum);
-        formData.append("Scenario1Order", scenarios[1].orderNum);
-        formData.append("Scenario2Order", scenarios[2].orderNum);
-        formData.append("Scenario3Order", scenarios[3].orderNum);
-        formData.append("Scenario4Order", scenarios[4].orderNum);
-        formData.append("Scenario5Order", scenarios[5].orderNum);
-        formData.append("Scenario0primary", scenarios[0].primaryVal);
-        formData.append("Scenario0secondary", scenarios[0].secondaryVal);
-        formData.append("Scenario1primary", scenarios[1].primaryVal);
-        formData.append("Scenario1secondary", scenarios[1].secondaryVal);
-        formData.append("Scenario2primary", scenarios[2].primaryVal);
-        formData.append("Scenario2secondary", scenarios[2].secondaryVal);
-        formData.append("Scenario3primary", scenarios[3].primaryVal);
-        formData.append("Scenario3secondary", scenarios[3].secondaryVal);
-        formData.append("Scenario4primary", scenarios[4].primaryVal);
-        formData.append("Scenario4secondary", scenarios[4].secondaryVal);
-        formData.append("Scenario5primary", scenarios[5].primaryVal);
-        formData.append("Scenario5secondary", scenarios[5].secondaryVal);
+        formData.append("Scenario0Order", scenario0Order);
+        formData.append("Scenario1Order", scenario1Order);
+        formData.append("Scenario2Order", scenario2Order);
+        formData.append("Scenario3Order", scenario3Order);
+        formData.append("Scenario4Order", scenario4Order);
+        formData.append("Scenario5Order", scenario4Order);
+        formData.append("Scenario0Primary", scenarios[0].primaryVal);
+        formData.append("Scenario0Secondary", scenarios[0].secondaryVal);
+        formData.append("Scenario1Primary", scenarios[1].primaryVal);
+        formData.append("Scenario1Secondary", scenarios[1].secondaryVal);
+        formData.append("Scenario2Primary", scenarios[2].primaryVal);
+        formData.append("Scenario2Secondary", scenarios[2].secondaryVal);
+        formData.append("Scenario3Primary", scenarios[3].primaryVal);
+        formData.append("Scenario3Secondary", scenarios[3].secondaryVal);
+        formData.append("Scenario4Primary", scenarios[4].primaryVal);
+        formData.append("Scenario4Secondary", scenarios[4].secondaryVal);
+        formData.append("Scenario5Primary", scenarios[5].primaryVal);
+        formData.append("Scenario5Secondary", scenarios[5].secondaryVal);
         formData.append("ScenarioSelected", selectedScenarioNum);
         formData.append("AmountReceived", amountReceived);
         formData.append("OriginalGift", originalGift);

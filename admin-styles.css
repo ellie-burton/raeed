@@ -1,0 +1,95 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.headerdiv {
+    background-color: #323232;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.session-management {
+    margin: 20px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.navbar button {
+    margin: 0 10px;
+    padding: 10px 20px;
+}
+
+#main-content {
+    margin: 20px;
+}
+
+.instructions, .charities, .proportions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.instruction, .charity, .proportion {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.instruction input, .charity input, .proportion input {
+    margin: 0 10px;
+    padding: 5px;
+    width: 300px;
+}
+.charity input {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.charity description {
+    margin: 0 10px;
+    padding: 5px;
+    width: 300px;
+}
+.input-label {
+    display: block;
+    text-align: center;
+}
+
+button.move-up, button.move-down, button.delete {
+    margin: 0 5px;
+}
+
+button#save-session {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+}
+
+/* Modal Custom Styles */
+.modal {
+    display: none; /* Hidden by default to allow script to control visibility */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
